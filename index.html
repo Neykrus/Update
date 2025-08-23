@@ -3,340 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Подарок для Гриши</title>
-    <!-- Use Inter font from Google Fonts -->
+    <title>Помощник по раскидкам в CS 2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Base styles for the body and container */
         body {
             font-family: 'Inter', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+            background-color: #1a1a1a; /* Более темный фон */
+            color: #e0e0e0;
+        }
+        .map-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-size: cover;
+            background-position: center;
+        }
+        .map-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
             overflow: hidden;
-            text-align: center;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); /* Cool, modern gradient background */
+            max-width: 100%;
+            background: #000;
         }
-        
-        /* Keyframe animation for the gift box shake effect */
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
-        }
-
-        /* Container for the gift button */
-        .gift-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            position: relative;
-        }
-
-        .gift-container:hover {
-            transform: scale(1.05) translateY(-5px); /* Slightly enlarge and lift on hover */
-            animation: shake 0.5s infinite; /* Add a shake animation on hover */
-        }
-        
-        /* Styles for the main gift box */
-        .gift-box {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            background-color: #7b4397; /* A deep purple color for the box */
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transition: background-color 0.3s ease;
-        }
-
-        /* Styles for the horizontal ribbon */
-        .gift-box::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 40px;
-            background-color: #fc6767; /* A vibrant pink color for the ribbon */
-            transform: translateY(-50%);
-        }
-        
-        /* Styles for the vertical ribbon */
-        .gift-box::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 40px;
-            height: 100%;
-            background-color: #fc6767; /* A vibrant pink color for the ribbon */
-            transform: translateX(-50%);
-        }
-        
-        /* Styles for the gift bow on top */
-        .gift-bow {
-            position: absolute;
-            top: -50px;
-            left: 50%;
-            width: 100px;
-            height: 100px;
-            background-color: #fc6767; /* Vibrant pink for the bow */
-            border-radius: 50%;
-            transform: translateX(-50%) rotate(45deg);
-            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.25);
-            transition: transform 0.3s ease;
-        }
-        
-        /* Style for the second part of the bow to create the full shape */
-        .gift-bow::before {
-            content: '';
+        .video-container iframe {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #fc6767;
-            border-radius: 50%;
-            transform: rotate(-90deg);
         }
-        
-        /* Styles for the revealed message container with glassmorphism effect */
-        .message-container {
-            display: none; /* Initially hidden */
-            opacity: 0;
-            transform: scale(0.5);
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            max-width: 90%;
-            width: 400px;
-            padding: 2.5rem;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            position: relative;
+        .btn {
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
-
-        /* Styles for the message text itself */
-        .message-text {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #fff;
-            line-height: 1.4;
-            letter-spacing: -1px;
-            min-height: 150px; /* Add min height to prevent CLS */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-            padding: 1rem;
+        .btn:hover {
+            transform: scale(1.05);
         }
-        
-        /* Styles for the button container */
-        .button-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-top: 1rem;
+        /* Скрытие скроллбара */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-
-        /* Styles for the "Generate" button */
-        #generate-btn {
-            background: linear-gradient(45deg, #fc6767 0%, #ec008c 100%);
-            color: #fff;
-            padding: 1rem 2rem;
-            border-radius: 9999px; /* Fully rounded corners */
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            border: none;
-            cursor: pointer;
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
         }
-
-        #generate-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
-            filter: brightness(1.1);
+        ::-webkit-scrollbar-thumb {
+            background: #4a4a4a;
+            border-radius: 4px;
         }
-        
-        /* Styles for the loading state */
-        .loading {
-            color: #fff;
-            font-size: 1.5rem;
-            font-weight: bold;
-            animation: pulse 1s infinite;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5a5a5a;
         }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Responsive styles for smaller screens */
-        @media (max-width: 600px) {
-            .gift-box {
-                width: 150px;
-                height: 150px;
-            }
-            .gift-box::before, .gift-box::after {
-                height: 30px;
-            }
-            .gift-bow {
-                width: 80px;
-                height: 80px;
-                top: -40px;
-            }
-            .message-text {
-                font-size: 1.5rem;
-            }
-            #generate-btn {
-                padding: 0.75rem 1.5rem;
-            }
-        }
-
     </style>
 </head>
-<body>
+<body class="min-h-screen flex items-center justify-center p-4">
 
-    <!-- Main gift box element that serves as a button -->
-    <div id="gift-button" class="gift-container" onclick="openGift()">
-        <div class="gift-box">
-            <div class="gift-bow"></div>
-        </div>
-    </div>
+    <div id="app" class="w-full max-w-6xl mx-auto">
 
-    <!-- The container for the message, initially hidden -->
-    <div id="message-container" class="message-container">
-        <div id="message-content">
-            <p id="message-text" class="message-text">Гриша, ты молодец!</p>
-        </div>
-        <div class="button-container">
-            <button id="generate-btn" class="rounded-full shadow-lg">Создать новое послание ✨</button>
-        </div>
+        <!-- Заголовок -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tight">
+                Помощник по раскидкам <span class="text-yellow-400">CS 2</span>
+            </h1>
+            <p id="subtitle" class="text-lg text-gray-400 mt-2">Выберите карту, чтобы начать</p>
+        </header>
+
+        <!-- Выбор карты -->
+        <section id="map-selection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Карточки карт будут добавлены сюда с помощью JS -->
+        </section>
+
+        <!-- Выбор точки и видео -->
+        <section id="nade-selection" class="hidden">
+            <div class="mb-6 text-center">
+                 <button id="back-to-maps" class="btn bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg mb-4">
+                    &larr; Назад к картам
+                </button>
+                <h2 id="selected-map-title" class="text-3xl font-bold text-yellow-400"></h2>
+                <div id="site-buttons" class="flex justify-center gap-4 mt-4">
+                    <!-- Кнопки для выбора точек (A, B, Mid) -->
+                </div>
+            </div>
+            <div id="video-display" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Видео будут добавлены сюда -->
+            </div>
+        </section>
+
     </div>
 
     <script>
-        // Get the gift button and message container elements
-        const giftButton = document.getElementById('gift-button');
-        const messageContainer = document.getElementById('message-container');
-        const messageText = document.getElementById('message-text');
-        const generateBtn = document.getElementById('generate-btn');
-
-        // URL for the Gemini API (using gemini-2.5-flash-preview-05-20)
-        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent";
-
-        // Function to build a query string from an object
-        function buildQueryString(params) {
-            return Object.entries(params)
-                .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-                .join('&');
-        }
-
-        // Function to fetch from the API with exponential backoff
-        async function fetchWithExponentialBackoff(url, options, retries = 3, delay = 1000) {
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (response.status === 429) {
-                        console.log(`Attempt ${i + 1}/${retries}: Too many requests. Retrying in ${delay / 1000}s.`);
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                        delay *= 2; // Double the delay
-                        continue;
-                    }
-                    if (!response.ok) {
-                        throw new Error(`HTTP error: ${response.status}`);
-                    }
-                    return response;
-                } catch (error) {
-                    if (i === retries - 1) {
-                        throw error;
-                    }
+        // --- БАЗА ДАННЫХ С РАСКИДКАМИ ---
+        // Здесь вы можете добавлять новые карты, точки и видео.
+        // Просто скопируйте ID видео с YouTube (то, что идет после "v=" в ссылке)
+        const nadeData = {
+            "Mirage": {
+                imageUrl: "https://placehold.co/600x400/333/FFF?text=Mirage", // Замените на реальное изображение
+                sites: {
+                    "Точка А": [
+                        { name: "Дым на 'stairs'", videoId: "AgmUu2bV_2E" },
+                        { name: "Дым на 'jungle' и 'connector'", videoId: "r0-8c2a3-hY" },
+                        { name: "Молотов под 'дефолт'", videoId: "i-pCvL2YIqU" },
+                    ],
+                    "Точка Б": [
+                        { name: "Дым в окно 'market'", videoId: "wGHs82z4sCw" },
+                        { name: "Дым на дверь 'market'", videoId: "iJgY20Xo7gE" },
+                        { name: "Молотов на 'short'", videoId: "Ld-qg8xYuek" },
+                    ]
+                }
+            },
+            "Inferno": {
+                imageUrl: "https://placehold.co/600x400/555/FFF?text=Inferno", // Замените на реальное изображение
+                sites: {
+                    "Точка А": [
+                        { name: "Дым на 'мото'", videoId: "U9z-b8_yO_k" },
+                        { name: "Молотов на 'гробы'", videoId: "Vv0aGz4eG5s" },
+                    ],
+                    "Точка Б": [
+                        { name: "Дым на 'КТ спавн'", videoId: "yGzIEJp234s" },
+                        { name: "Молотов на 'новый ящик'", videoId: "3-UDFU1k-aY" },
+                        { name: "Дым на 'гробы' с банана", videoId: "lNGSVaG3eB4" },
+                    ]
+                }
+            },
+            "Dust 2": {
+                imageUrl: "https://placehold.co/600x400/777/FFF?text=Dust+2",
+                sites: {
+                    "Точка А": [],
+                    "Точка Б": [],
+                }
+            },
+            "Vertigo": {
+                imageUrl: "https://placehold.co/600x400/999/FFF?text=Vertigo",
+                sites: {
+                    "Точка А": [],
+                    "Точка Б": [],
                 }
             }
+        };
+
+        // --- ЭЛЕМЕНТЫ DOM ---
+        const mapSelectionEl = document.getElementById('map-selection');
+        const nadeSelectionEl = document.getElementById('nade-selection');
+        const videoDisplayEl = document.getElementById('video-display');
+        const backToMapsBtn = document.getElementById('back-to-maps');
+        const selectedMapTitleEl = document.getElementById('selected-map-title');
+        const siteButtonsEl = document.getElementById('site-buttons');
+        const subtitleEl = document.getElementById('subtitle');
+
+        // --- ЛОГИКА ПРИЛОЖЕНИЯ ---
+
+        // Функция для отображения видео
+        function displayVideos(mapName, siteName) {
+            const videos = nadeData[mapName].sites[siteName];
+            videoDisplayEl.innerHTML = ''; // Очищаем предыдущие видео
+
+            if (videos.length === 0) {
+                videoDisplayEl.innerHTML = `<p class="text-gray-400 col-span-full text-center">Для этой точки пока нет видео. Вы можете добавить их в коде!</p>`;
+                return;
+            }
+
+            videos.forEach(video => {
+                const videoCard = `
+                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg animate-fade-in">
+                        <div class="video-container">
+                            <iframe
+                                src="https://www.youtube.com/embed/${video.videoId}"
+                                title="YouTube video player"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-white">${video.name}</h3>
+                        </div>
+                    </div>
+                `;
+                videoDisplayEl.innerHTML += videoCard;
+            });
         }
 
-        // Function to generate a new message using the Gemini API
-        async function generateNewMessage() {
-            messageText.textContent = 'Генерация...';
-            messageText.classList.add('loading');
-            generateBtn.disabled = true;
+        // Функция для отображения выбора точек
+        function showSiteSelection(mapName) {
+            mapSelectionEl.classList.add('hidden');
+            nadeSelectionEl.classList.remove('hidden');
+            subtitleEl.textContent = `Выбрана карта: ${mapName}`;
 
-            const prompt = "Напиши короткое, доброе и вдохновляющее сообщение для человека по имени Гриша. Сообщение должно быть радостным и подбадривающим.";
-            const apiKey = "";
-            const queryParams = { key: apiKey };
-            const apiUrlWithKey = `${API_URL}?${buildQueryString(queryParams)}`;
-            
-            const payload = {
-                contents: [{
-                    parts: [{ text: prompt }]
-                }]
-            };
+            selectedMapTitleEl.textContent = mapName;
+            siteButtonsEl.innerHTML = ''; // Очищаем кнопки
 
-            try {
-                const response = await fetchWithExponentialBackoff(apiUrlWithKey, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+            const sites = Object.keys(nadeData[mapName].sites);
+            sites.forEach(siteName => {
+                const button = document.createElement('button');
+                button.textContent = siteName;
+                button.className = 'site-btn btn bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-6 rounded-lg';
+                button.dataset.map = mapName;
+                button.dataset.site = siteName;
+
+                button.addEventListener('click', () => {
+                    // Управление активным состоянием кнопок
+                    document.querySelectorAll('.site-btn').forEach(btn => btn.classList.replace('bg-yellow-400', 'bg-yellow-500'));
+                    button.classList.replace('bg-yellow-500', 'bg-yellow-400');
+                    displayVideos(mapName, siteName);
                 });
 
-                const result = await response.json();
+                siteButtonsEl.appendChild(button);
+            });
 
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    messageText.textContent = text;
-                } else {
-                    console.error('Unexpected API response format:', result);
-                    messageText.textContent = 'Не удалось сгенерировать сообщение. Пожалуйста, попробуйте еще раз.';
-                }
-            } catch (error) {
-                console.error('API call failed:', error);
-                messageText.textContent = 'Произошла ошибка. Пожалуйста, попробуйте еще раз.';
-            } finally {
-                messageText.classList.remove('loading');
-                generateBtn.disabled = false;
+            // Автоматически нажимаем на первую кнопку точки
+            if (siteButtonsEl.firstChild) {
+                siteButtonsEl.firstChild.click();
+            } else {
+                 videoDisplayEl.innerHTML = `<p class="text-gray-400 col-span-full text-center">Для этой карты пока нет точек.</p>`;
             }
         }
 
-        // Function to handle the gift opening logic
-        function openGift() {
-            // Hide the gift button with a smooth animation
-            giftButton.style.transform = 'scale(0.1) rotate(180deg)';
-            giftButton.style.opacity = '0';
-            setTimeout(() => {
-                giftButton.style.display = 'none';
-
-                // Show the message container with a pop-in animation
-                messageContainer.style.display = 'flex';
-                messageContainer.style.flexDirection = 'column';
-                messageContainer.style.alignItems = 'center';
-
-                setTimeout(() => {
-                    messageContainer.style.opacity = '1';
-                    messageContainer.style.transform = 'scale(1)';
-                }, 100); // Small delay to allow the display property to take effect
-            }, 500); // Match the CSS transition duration
+        // Функция для отображения выбора карты
+        function showMapSelection() {
+            nadeSelectionEl.classList.add('hidden');
+            mapSelectionEl.classList.remove('hidden');
+            subtitleEl.textContent = 'Выберите карту, чтобы начать';
+            videoDisplayEl.innerHTML = '';
         }
 
-        // Add event listener to the generate button
-        generateBtn.addEventListener('click', generateNewMessage);
-    </script>
+        // Инициализация: создаем карточки карт
+        function initialize() {
+            mapSelectionEl.innerHTML = '';
+            const mapNames = Object.keys(nadeData);
 
+            mapNames.forEach(mapName => {
+                const map = nadeData[mapName];
+                const card = document.createElement('div');
+                card.className = 'map-card relative h-48 rounded-lg shadow-xl cursor-pointer overflow-hidden flex items-end p-4';
+                card.style.backgroundImage = `linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 50%), url(${map.imageUrl})`;
+                
+                const title = document.createElement('h2');
+                title.className = 'text-2xl font-bold text-white z-10';
+                title.textContent = mapName;
+                
+                card.appendChild(title);
+
+                card.addEventListener('click', () => showSiteSelection(mapName));
+                mapSelectionEl.appendChild(card);
+            });
+        }
+
+        // Слушатель для кнопки "Назад"
+        backToMapsBtn.addEventListener('click', showMapSelection);
+
+        // Запускаем приложение
+        initialize();
+
+    </script>
 </body>
 </html>
