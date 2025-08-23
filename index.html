@@ -11,7 +11,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #1a1a1a; /* Более темный фон */
+            background-color: #1a1a1a;
             color: #e0e0e0;
         }
         .map-card {
@@ -25,7 +25,7 @@
         }
         .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            padding-bottom: 56.25%; /* 16:9 */
             height: 0;
             overflow: hidden;
             max-width: 100%;
@@ -44,27 +44,58 @@
         .btn:hover {
             transform: scale(1.05);
         }
-        /* Скрытие скроллбара */
-        ::-webkit-scrollbar {
-            width: 8px;
+        /* Стили для модального окна и оверлея */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-        ::-webkit-scrollbar-track {
-            background: #1a1a1a;
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #4a4a4a;
-            border-radius: 4px;
+        .modal-content {
+            background: #2d2d2d;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #5a5a5a;
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+        /* Стили для лоадера */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #f59e0b;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <div id="app" class="w-full max-w-6xl mx-auto">
-
-        <!-- Заголовок -->
+    <div id="app" class="w-full max-w-7xl mx-auto">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tight">
                 Помощник по раскидкам <span class="text-yellow-400">CS 2</span>
@@ -72,76 +103,151 @@
             <p id="subtitle" class="text-lg text-gray-400 mt-2">Выберите карту, чтобы начать</p>
         </header>
 
-        <!-- Выбор карты -->
-        <section id="map-selection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Карточки карт будут добавлены сюда с помощью JS -->
-        </section>
+        <section id="map-selection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></section>
 
-        <!-- Выбор точки и видео -->
         <section id="nade-selection" class="hidden">
             <div class="mb-6 text-center">
                  <button id="back-to-maps" class="btn bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg mb-4">
                     &larr; Назад к картам
                 </button>
                 <h2 id="selected-map-title" class="text-3xl font-bold text-yellow-400"></h2>
-                <div id="site-buttons" class="flex justify-center gap-4 mt-4">
-                    <!-- Кнопки для выбора точек (A, B, Mid) -->
+                <div id="controls-container" class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-4">
+                    <div id="site-buttons" class="flex justify-center gap-4"></div>
+                    <div id="strategy-button-container"></div>
                 </div>
             </div>
-            <div id="video-display" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                <!-- Видео будут добавлены сюда -->
-            </div>
+            <div id="video-display" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
         </section>
+    </div>
 
+    <!-- Модальное окно для стратегии -->
+    <div id="strategy-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold text-yellow-400">✨ План на раунд</h3>
+                <button id="close-modal" class="text-2xl text-gray-400 hover:text-white">&times;</button>
+            </div>
+            <div id="strategy-output" class="text-gray-300 space-y-4">
+                <!-- Сюда будет загружен ответ от Gemini -->
+            </div>
+        </div>
     </div>
 
     <script>
         // --- БАЗА ДАННЫХ С РАСКИДКАМИ ---
-        // Здесь вы можете добавлять новые карты, точки и видео.
-        // Просто скопируйте ID видео с YouTube (то, что идет после "v=" в ссылке)
         const nadeData = {
             "Mirage": {
-                imageUrl: "https://placehold.co/600x400/333/FFF?text=Mirage", // Замените на реальное изображение
+                imageUrl: "https://cdn.cloudflare.steamstatic.com/apps/csgo/images/blog/de_mirage.jpg?v=5",
                 sites: {
                     "Точка А": [
-                        { name: "Дым на 'stairs'", videoId: "AgmUu2bV_2E" },
-                        { name: "Дым на 'jungle' и 'connector'", videoId: "r0-8c2a3-hY" },
-                        { name: "Молотов под 'дефолт'", videoId: "i-pCvL2YIqU" },
+                        { name: "Дым на 'Stairs' (с Т-спавна)", videoId: "wm7UO8T0Deo", timestamp: 5 },
+                        { name: "Дым на 'Jungle/Connector' (с Т-спавна)", videoId: "wm7UO8T0Deo", timestamp: 17 },
+                        { name: "Дым на 'CT' (с Т-спавна)", videoId: "wm7UO8T0Deo", timestamp: 28 },
+                        { name: "Молотов на 'Default' (из дворца)", videoId: "wm7UO8T0Deo", timestamp: 41 },
+                        { name: "Молотов на 'Sandwich' (из дворца)", videoId: "wm7UO8T0Deo", timestamp: 51 },
+                        { name: "Флеш над дворцом", videoId: "wm7UO8T0Deo", timestamp: 60 },
                     ],
                     "Точка Б": [
-                        { name: "Дым в окно 'market'", videoId: "wGHs82z4sCw" },
-                        { name: "Дым на дверь 'market'", videoId: "iJgY20Xo7gE" },
-                        { name: "Молотов на 'short'", videoId: "Ld-qg8xYuek" },
+                        { name: "Дым в окно 'Market' (с Т-спавна)", videoId: "wm7UO8T0Deo", timestamp: 71 },
+                        { name: "Дым на дверь 'Market' (с Т-спавна)", videoId: "wm7UO8T0Deo", timestamp: 81 },
+                        { name: "Дым на 'Short' (из аппартаментов)", videoId: "wm7UO8T0Deo", timestamp: 91 },
+                        { name: "Молотов на 'Van' (из аппартаментов)", videoId: "wm7UO8T0Deo", timestamp: 101 },
                     ]
                 }
             },
             "Inferno": {
-                imageUrl: "https://placehold.co/600x400/555/FFF?text=Inferno", // Замените на реальное изображение
+                imageUrl: "https://esports.gg/wp-content/uploads/2023/10/CS2-Inferno-Guide.jpg",
                 sites: {
                     "Точка А": [
-                        { name: "Дым на 'мото'", videoId: "U9z-b8_yO_k" },
-                        { name: "Молотов на 'гробы'", videoId: "Vv0aGz4eG5s" },
+                        { name: "Дым на 'Moto'", videoId: "3-UDFU1k-aY", timestamp: 5 },
+                        { name: "Дым на 'Library'", videoId: "3-UDFU1k-aY", timestamp: 15 },
+                        { name: "Молотов на 'Balcony'", videoId: "3-UDFU1k-aY", timestamp: 26 },
+                        { name: "Молотов в 'Pit'", videoId: "3-UDFU1k-aY", timestamp: 35 },
                     ],
                     "Точка Б": [
-                        { name: "Дым на 'КТ спавн'", videoId: "yGzIEJp234s" },
-                        { name: "Молотов на 'новый ящик'", videoId: "3-UDFU1k-aY" },
-                        { name: "Дым на 'гробы' с банана", videoId: "lNGSVaG3eB4" },
+                        { name: "Дым на 'CT Spawn'", videoId: "3-UDFU1k-aY", timestamp: 81 },
+                        { name: "Дым на 'Coffins'", videoId: "3-UDFU1k-aY", timestamp: 91 },
+                        { name: "Молотов на 'New Box'", videoId: "3-UDFU1k-aY", timestamp: 101 },
+                        { name: "Молотов на 'First Box'", videoId: "3-UDFU1k-aY", timestamp: 111 },
                     ]
                 }
             },
-            "Dust 2": {
-                imageUrl: "https://placehold.co/600x400/777/FFF?text=Dust+2",
+            "Vertigo": {
+                imageUrl: "https://cdn.dotesports.com/wp-content/uploads/2021/04/21115106/vertigo-csgo.jpg",
                 sites: {
-                    "Точка А": [],
-                    "Точка Б": [],
+                    "Точка А": [
+                        { name: "Дым на 'Heaven'", videoId: "B6h-eUa-S2Y", timestamp: 5 },
+                        { name: "Дым 'Default' (правый)", videoId: "B6h-eUa-S2Y", timestamp: 15 },
+                        { name: "Дым 'Default' (левый)", videoId: "B6h-eUa-S2Y", timestamp: 25 },
+                        { name: "Молотов на 'Default'", videoId: "B6h-eUa-S2Y", timestamp: 36 },
+                    ],
+                    "Точка Б": [
+                        { name: "Дым 'Generator' (правый)", videoId: "B6h-eUa-S2Y", timestamp: 81 },
+                        { name: "Дым 'Generator' (левый)", videoId: "B6h-eUa-S2Y", timestamp: 91 },
+                        { name: "Молотов на 'Default'", videoId: "B6h-eUa-S2Y", timestamp: 101 },
+                    ]
                 }
             },
-            "Vertigo": {
-                imageUrl: "https://placehold.co/600x400/999/FFF?text=Vertigo",
+            "Ancient": {
+                imageUrl: "https://tryhardguides.com/wp-content/uploads/2024/01/cs2-ancient-map-guide-featured.jpg",
                 sites: {
-                    "Точка А": [],
-                    "Точка Б": [],
+                    "Точка А": [
+                        { name: "Дым на 'CT Spawn'", videoId: "kUfDa-pao0c", timestamp: 5 },
+                        { name: "Дым на 'Temple'", videoId: "kUfDa-pao0c", timestamp: 16 },
+                        { name: "Молотов на 'Triple Box'", videoId: "kUfDa-pao0c", timestamp: 26 },
+                    ],
+                    "Точка Б": [
+                        { name: "Дым на 'Long'", videoId: "kUfDa-pao0c", timestamp: 79 },
+                        { name: "Дым на 'Short'", videoId: "kUfDa-pao0c", timestamp: 89 },
+                        { name: "Молотов на 'Pillar'", videoId: "kUfDa-pao0c", timestamp: 99 },
+                    ]
                 }
+            },
+             "Nuke": {
+                imageUrl: "https://cdn.dotesports.com/wp-content/uploads/2021/04/21115024/nuke-csgo.jpg",
+                sites: {
+                    "Точка А": [
+                        { name: "Дым на 'Main'", videoId: "l_m035C-3SM", timestamp: 5 },
+                        { name: "Дым на 'Garage'", videoId: "l_m035C-3SM", timestamp: 15 },
+                        { name: "Дым на 'Heaven'", videoId: "l_m035C-3SM", timestamp: 25 },
+                    ],
+                    "Точка Б": [
+                        { name: "Дым на 'Garage' (с рампы)", videoId: "l_m035C-3SM", timestamp: 81 },
+                        { name: "Дым на 'Doors' (с рампы)", videoId: "l_m035C-3SM", timestamp: 91 },
+                    ]
+                }
+            },
+            "Anubis": {
+                imageUrl: "https://cdn.dotesports.com/wp-content/uploads/2022/11/18151901/Anubis-CSGO-Map.jpg",
+                sites: {
+                    "Точка А": [
+                        { name: "Дым на 'Heaven'", videoId: "L2DRqoOa9mQ", timestamp: 4 },
+                        { name: "Дым на 'Plat'", videoId: "L2DRqoOa9mQ", timestamp: 13 },
+                        { name: "Молотов на 'Connector'", videoId: "L2DRqoOa9mQ", timestamp: 22 },
+                        { name: "Молотов под 'Plat'", videoId: "L2DRqoOa9mQ", timestamp: 31 },
+                        { name: "Флеш для выхода на точку", videoId: "L2DRqoOa9mQ", timestamp: 40 },
+                    ],
+                    "Точка Б": [
+                        { name: "Дым на 'Bridge'", videoId: "L2DRqoOa9mQ", timestamp: 51 },
+                        { name: "Дым на 'Street'", videoId: "L2DRqoOa9mQ", timestamp: 60 },
+                        { name: "Дым в 'Palace'", videoId: "L2DRqoOa9mQ", timestamp: 69 },
+                        { name: "Молотов на 'Default'", videoId: "L2DRqoOa9mQ", timestamp: 78 },
+                        { name: "Флеш для выхода на точку", videoId: "L2DRqoOa9mQ", timestamp: 87 },
+                    ]
+                }
+            },
+            "Dust 2": { 
+                imageUrl: "https://files.bo3.gg/uploads/news/31193/title_image/960x480-d29b13997201a40538f91886551a141b.webp", 
+                sites: { 
+                    "Точка А": [
+                        { name: "Дым на 'Long Cross'", videoId: "u9A-A8-333k", timestamp: 5 },
+                        { name: "Флеш на 'Long'", videoId: "u9A-A8-333k", timestamp: 15 },
+                    ], 
+                    "Точка Б": [
+                        { name: "Дым на 'B Doors'", videoId: "u9A-A8-333k", timestamp: 81 },
+                        { name: "Флеш на 'B Site'", videoId: "u9A-A8-333k", timestamp: 91 },
+                    ] 
+                } 
             }
         };
 
@@ -153,13 +259,82 @@
         const selectedMapTitleEl = document.getElementById('selected-map-title');
         const siteButtonsEl = document.getElementById('site-buttons');
         const subtitleEl = document.getElementById('subtitle');
+        const strategyButtonContainer = document.getElementById('strategy-button-container');
+        const strategyModal = document.getElementById('strategy-modal');
+        const strategyOutput = document.getElementById('strategy-output');
+        const closeModalBtn = document.getElementById('close-modal');
+
+        // --- GEMINI API ИНТЕГРАЦИЯ ---
+        const API_KEY = ""; // API-ключ не требуется, если используется gemini-2.5-flash-preview-05-20
+
+        async function callGeminiWithBackoff(prompt, maxRetries = 3) {
+            let delay = 1000;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                    const payload = { contents: chatHistory };
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        throw new Error("Invalid API response structure.");
+                    }
+                } catch (error) {
+                    console.error(`Attempt ${i + 1} failed:`, error);
+                    if (i === maxRetries - 1) throw error;
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2; // Экспоненциальная задержка
+                }
+            }
+        }
+
+        async function generateStrategy(mapName, siteName) {
+            strategyOutput.innerHTML = '<div class="flex justify-center"><div class="loader"></div></div>';
+            strategyModal.classList.add('visible');
+
+            const nades = nadeData[mapName].sites[siteName];
+            if (nades.length === 0) {
+                strategyOutput.innerHTML = '<p>Недостаточно данных для генерации стратегии. Сначала добавьте видео с раскидками для этой точки.</p>';
+                return;
+            }
+            const nadeListString = nades.map(n => `"${n.name}"`).join(', ');
+
+            const prompt = `Ты — профессиональный тренер по Counter-Strike 2. Твоя задача — предложить простую, но эффективную атакующую стратегию для карты ${mapName} при заходе на точку ${siteName}.
+            
+            У команды есть следующие гранаты: ${nadeListString}.
+            
+            Твой ответ должен быть:
+            1. На русском языке.
+            2. Четко структурирован (например, по шагам или по ролям игроков).
+            3. Легким для понимания командой среднего уровня.
+            4. Учитывать использование предоставленных гранат.
+            5. Краткий и по делу.`;
+
+            try {
+                const resultText = await callGeminiWithBackoff(prompt);
+                strategyOutput.innerHTML = resultText.replace(/\n/g, '<br>');
+            } catch (error) {
+                console.error("Failed to generate strategy:", error);
+                strategyOutput.innerHTML = '<p>К сожалению, не удалось сгенерировать стратегию. Пожалуйста, попробуйте еще раз позже.</p>';
+            }
+        }
 
         // --- ЛОГИКА ПРИЛОЖЕНИЯ ---
-
-        // Функция для отображения видео
         function displayVideos(mapName, siteName) {
             const videos = nadeData[mapName].sites[siteName];
-            videoDisplayEl.innerHTML = ''; // Очищаем предыдущие видео
+            videoDisplayEl.innerHTML = ''; 
 
             if (videos.length === 0) {
                 videoDisplayEl.innerHTML = `<p class="text-gray-400 col-span-full text-center">Для этой точки пока нет видео. Вы можете добавить их в коде!</p>`;
@@ -167,97 +342,92 @@
             }
 
             videos.forEach(video => {
+                let videoUrl = `https://www.youtube.com/embed/${video.videoId}`;
+                if (video.timestamp) {
+                    videoUrl += `?start=${video.timestamp}&autoplay=1`;
+                }
+
                 const videoCard = `
-                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg animate-fade-in">
+                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg">
                         <div class="video-container">
-                            <iframe
-                                src="https://www.youtube.com/embed/${video.videoId}"
-                                title="YouTube video player"
-                                frameborder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen>
-                            </iframe>
+                            <iframe src="${videoUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         </div>
-                        <div class="p-4">
-                            <h3 class="font-semibold text-white">${video.name}</h3>
-                        </div>
-                    </div>
-                `;
+                        <div class="p-4"><h3 class="font-semibold text-white">${video.name}</h3></div>
+                    </div>`;
                 videoDisplayEl.innerHTML += videoCard;
             });
         }
 
-        // Функция для отображения выбора точек
         function showSiteSelection(mapName) {
             mapSelectionEl.classList.add('hidden');
             nadeSelectionEl.classList.remove('hidden');
             subtitleEl.textContent = `Выбрана карта: ${mapName}`;
-
             selectedMapTitleEl.textContent = mapName;
-            siteButtonsEl.innerHTML = ''; // Очищаем кнопки
+            siteButtonsEl.innerHTML = '';
+            strategyButtonContainer.innerHTML = '';
 
             const sites = Object.keys(nadeData[mapName].sites);
             sites.forEach(siteName => {
                 const button = document.createElement('button');
                 button.textContent = siteName;
                 button.className = 'site-btn btn bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-6 rounded-lg';
-                button.dataset.map = mapName;
-                button.dataset.site = siteName;
-
                 button.addEventListener('click', () => {
-                    // Управление активным состоянием кнопок
                     document.querySelectorAll('.site-btn').forEach(btn => btn.classList.replace('bg-yellow-400', 'bg-yellow-500'));
                     button.classList.replace('bg-yellow-500', 'bg-yellow-400');
                     displayVideos(mapName, siteName);
+                    
+                    strategyButtonContainer.innerHTML = '';
+                    const strategyBtn = document.createElement('button');
+                    strategyBtn.innerHTML = `✨ Предложить стратегию`;
+                    strategyBtn.className = 'btn bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg';
+                    strategyBtn.onclick = () => generateStrategy(mapName, siteName);
+                    strategyButtonContainer.appendChild(strategyBtn);
                 });
-
                 siteButtonsEl.appendChild(button);
             });
 
-            // Автоматически нажимаем на первую кнопку точки
             if (siteButtonsEl.firstChild) {
                 siteButtonsEl.firstChild.click();
             } else {
-                 videoDisplayEl.innerHTML = `<p class="text-gray-400 col-span-full text-center">Для этой карты пока нет точек.</p>`;
+                videoDisplayEl.innerHTML = `<p class="text-gray-400 col-span-full text-center">Для этой карты пока нет точек.</p>`;
             }
         }
 
-        // Функция для отображения выбора карты
         function showMapSelection() {
             nadeSelectionEl.classList.add('hidden');
             mapSelectionEl.classList.remove('hidden');
             subtitleEl.textContent = 'Выберите карту, чтобы начать';
             videoDisplayEl.innerHTML = '';
+            strategyButtonContainer.innerHTML = '';
         }
 
-        // Инициализация: создаем карточки карт
         function initialize() {
             mapSelectionEl.innerHTML = '';
-            const mapNames = Object.keys(nadeData);
-
-            mapNames.forEach(mapName => {
-                const map = nadeData[mapName];
-                const card = document.createElement('div');
-                card.className = 'map-card relative h-48 rounded-lg shadow-xl cursor-pointer overflow-hidden flex items-end p-4';
-                card.style.backgroundImage = `linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 50%), url(${map.imageUrl})`;
-                
-                const title = document.createElement('h2');
-                title.className = 'text-2xl font-bold text-white z-10';
-                title.textContent = mapName;
-                
-                card.appendChild(title);
-
-                card.addEventListener('click', () => showSiteSelection(mapName));
-                mapSelectionEl.appendChild(card);
+            // Определяем порядок карт для отображения
+            const mapOrder = ["Mirage", "Inferno", "Vertigo", "Ancient", "Nuke", "Anubis", "Dust 2"];
+            mapOrder.forEach(mapName => {
+                if (nadeData[mapName]) {
+                    const map = nadeData[mapName];
+                    const card = document.createElement('div');
+                    card.className = 'map-card relative h-48 rounded-lg shadow-xl cursor-pointer overflow-hidden flex items-end p-4';
+                    card.style.backgroundImage = `linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 50%), url(${map.imageUrl})`;
+                    card.innerHTML = `<h2 class="text-2xl font-bold text-white z-10">${mapName}</h2>`;
+                    card.addEventListener('click', () => showSiteSelection(mapName));
+                    mapSelectionEl.appendChild(card);
+                }
             });
         }
 
-        // Слушатель для кнопки "Назад"
+        // Слушатели для модального окна
+        closeModalBtn.addEventListener('click', () => strategyModal.classList.remove('visible'));
+        strategyModal.addEventListener('click', (e) => {
+            if (e.target === strategyModal) {
+                strategyModal.classList.remove('visible');
+            }
+        });
+
         backToMapsBtn.addEventListener('click', showMapSelection);
-
-        // Запускаем приложение
         initialize();
-
     </script>
 </body>
 </html>
