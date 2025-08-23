@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подарок для Гриши</title>
+    <!-- Use Inter font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Base styles for the body and container */
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); /* Cool, modern gradient background */
+        }
+        
+        /* Keyframe animation for the gift box shake effect */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        /* Container for the gift button */
+        .gift-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .gift-container:hover {
+            transform: scale(1.05) translateY(-5px); /* Slightly enlarge and lift on hover */
+            animation: shake 0.5s infinite; /* Add a shake animation on hover */
+        }
+        
+        /* Styles for the main gift box */
+        .gift-box {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            background-color: #7b4397; /* A deep purple color for the box */
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease;
+        }
+
+        /* Styles for the horizontal ribbon */
+        .gift-box::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background-color: #fc6767; /* A vibrant pink color for the ribbon */
+            transform: translateY(-50%);
+        }
+        
+        /* Styles for the vertical ribbon */
+        .gift-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 40px;
+            height: 100%;
+            background-color: #fc6767; /* A vibrant pink color for the ribbon */
+            transform: translateX(-50%);
+        }
+        
+        /* Styles for the gift bow on top */
+        .gift-bow {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            background-color: #fc6767; /* Vibrant pink for the bow */
+            border-radius: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.25);
+            transition: transform 0.3s ease;
+        }
+        
+        /* Style for the second part of the bow to create the full shape */
+        .gift-bow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fc6767;
+            border-radius: 50%;
+            transform: rotate(-90deg);
+        }
+        
+        /* Styles for the revealed message container with glassmorphism effect */
+        .message-container {
+            display: none; /* Initially hidden */
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            max-width: 90%;
+            width: 400px;
+            padding: 2.5rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        /* Styles for the message text itself */
+        .message-text {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            line-height: 1.4;
+            letter-spacing: -1px;
+            min-height: 150px; /* Add min height to prevent CLS */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            padding: 1rem;
+        }
+        
+        /* Styles for the button container */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Styles for the "Generate" button */
+        #generate-btn {
+            background: linear-gradient(45deg, #fc6767 0%, #ec008c 100%);
+            color: #fff;
+            padding: 1rem 2rem;
+            border-radius: 9999px; /* Fully rounded corners */
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border: none;
+            cursor: pointer;
+        }
+
+        #generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+            filter: brightness(1.1);
+        }
+        
+        /* Styles for the loading state */
+        .loading {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: bold;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Responsive styles for smaller screens */
+        @media (max-width: 600px) {
+            .gift-box {
+                width: 150px;
+                height: 150px;
+            }
+            .gift-box::before, .gift-box::after {
+                height: 30px;
+            }
+            .gift-bow {
+                width: 80px;
+                height: 80px;
+                top: -40px;
+            }
+            .message-text {
+                font-size: 1.5rem;
+            }
+            #generate-btn {
+                padding: 0.75rem 1.5rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Main gift box element that serves as a button -->
+    <div id="gift-button" class="gift-container" onclick="openGift()">
+        <div class="gift-box">
+            <div class="gift-bow"></div>
+        </div>
+    </div>
+
+    <!-- The container for the message, initially hidden -->
+    <div id="message-container" class="message-container">
+        <div id="message-content">
+            <p id="message-text" class="message-text">Гриша, ты молодец!</p>
+        </div>
+        <div class="button-container">
+            <button id="generate-btn" class="rounded-full shadow-lg">Создать новое послание ✨</button>
+        </div>
+    </div>
+
+    <script>
+        // Get the gift button and message container elements
+        const giftButton = document.getElementById('gift-button');
+        const messageContainer = document.getElementById('message-container');
+        const messageText = document.getElementById('message-text');
+        const generateBtn = document.getElementById('generate-btn');
+
+        // URL for the Gemini API (using gemini-2.5-flash-preview-05-20)
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent";
+
+        // Function to build a query string from an object
+        function buildQueryString(params) {
+            return Object.entries(params)
+                .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+                .join('&');
+        }
+
+        // Function to fetch from the API with exponential backoff
+        async function fetchWithExponentialBackoff(url, options, retries = 3, delay = 1000) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.status === 429) {
+                        console.log(`Attempt ${i + 1}/${retries}: Too many requests. Retrying in ${delay / 1000}s.`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2; // Double the delay
+                        continue;
+                    }
+                    if (!response.ok) {
+                        throw new Error(`HTTP error: ${response.status}`);
+                    }
+                    return response;
+                } catch (error) {
+                    if (i === retries - 1) {
+                        throw error;
+                    }
+                }
+            }
+        }
+
+        // Function to generate a new message using the Gemini API
+        async function generateNewMessage() {
+            messageText.textContent = 'Генерация...';
+            messageText.classList.add('loading');
+            generateBtn.disabled = true;
+
+            const prompt = "Напиши короткое, доброе и вдохновляющее сообщение для человека по имени Гриша. Сообщение должно быть радостным и подбадривающим.";
+            const apiKey = "";
+            const queryParams = { key: apiKey };
+            const apiUrlWithKey = `${API_URL}?${buildQueryString(queryParams)}`;
+            
+            const payload = {
+                contents: [{
+                    parts: [{ text: prompt }]
+                }]
+            };
+
+            try {
+                const response = await fetchWithExponentialBackoff(apiUrlWithKey, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    messageText.textContent = text;
+                } else {
+                    console.error('Unexpected API response format:', result);
+                    messageText.textContent = 'Не удалось сгенерировать сообщение. Пожалуйста, попробуйте еще раз.';
+                }
+            } catch (error) {
+                console.error('API call failed:', error);
+                messageText.textContent = 'Произошла ошибка. Пожалуйста, попробуйте еще раз.';
+            } finally {
+                messageText.classList.remove('loading');
+                generateBtn.disabled = false;
+            }
+        }
+
+        // Function to handle the gift opening logic
+        function openGift() {
+            // Hide the gift button with a smooth animation
+            giftButton.style.transform = 'scale(0.1) rotate(180deg)';
+            giftButton.style.opacity = '0';
+            setTimeout(() => {
+                giftButton.style.display = 'none';
+
+                // Show the message container with a pop-in animation
+                messageContainer.style.display = 'flex';
+                messageContainer.style.flexDirection = 'column';
+                messageContainer.style.alignItems = 'center';
+
+                setTimeout(() => {
+                    messageContainer.style.opacity = '1';
+                    messageContainer.style.transform = 'scale(1)';
+                }, 100); // Small delay to allow the display property to take effect
+            }, 500); // Match the CSS transition duration
+        }
+
+        // Add event listener to the generate button
+        generateBtn.addEventListener('click', generateNewMessage);
+    </script>
+
+</body>
+</html>
