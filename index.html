@@ -439,4 +439,15 @@
         }
 
         // Слушатели для модального окна
-        closeModalBtn.addEventListener('click', () => strat
+        closeModalBtn.addEventListener('click', () => strategyModal.classList.remove('visible'));
+        strategyModal.addEventListener('click', (e) => {
+            if (e.target === strategyModal) {
+                strategyModal.classList.remove('visible');
+            }
+        });
+
+        backToMapsBtn.addEventListener('click', showMapSelection);
+        initialize();
+    </script>
+</body>
+</html>
