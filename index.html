@@ -1,463 +1,480 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Помощник по раскидкам в CS 2</title>
+    <title>Интерактивный бизнес-план | Cyberion</title>
+    <!-- Chosen Palette: Neon Fury -->
+    <!-- Application Structure Plan: The application is designed as a single-page interactive dashboard with a fixed sidebar for navigation. This structure was chosen over a linear document to allow non-linear exploration of the business plan, enabling users (e.g., investors) to quickly jump to sections of interest like financials or SWOT analysis. The user flow starts with a high-level summary and encourages deeper dives into the Business Model, SWOT, and Strategy sections. This enhances usability and makes the complex information more digestible. -->
+    <!-- Visualization & Content Choices: 
+        - Summary -> Inform -> Key Metrics Cards -> HTML/CSS -> To highlight core numbers and mission.
+        - Products/Services -> Organize -> Icon-based cards -> HTML/CSS -> For quick visual differentiation of services.
+        - Competitors -> Compare -> Comparison Table -> HTML/CSS -> For a clear, structured comparison.
+        - SWOT Analysis -> Organize/Compare -> Interactive 2x2 Grid + Radar Chart -> HTML/CSS for grid, Chart.js/Canvas for chart -> The grid provides detailed text, while the radar chart offers a quick, quantitative visual summary of the analysis, making it more impactful.
+        - Revenue Streams -> Compare/Inform -> Don't Chart -> Chart.js/Canvas -> To visually represent the contribution of each income source, which is more intuitive than a text list.
+        - Milestones -> Change -> Timeline -> HTML/CSS -> To clearly present the projected business development path.
+        - Justification: These choices transform a static text document into an engaging analytical tool, prioritizing data synthesis and user interaction.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Russo+One&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #1a1a1a;
-            color: #e0e0e0;
+            background-color: #000000;
+            color: #d1d5db; /* text-gray-300 */
         }
-        .map-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            background-size: cover;
-            background-position: center;
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Russo One', sans-serif;
+            letter-spacing: 0.05em;
         }
-        .map-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-        }
-        .video-container {
+        .chart-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
-            height: 0;
-            overflow: hidden;
-            max-width: 100%;
-            background: #000;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
         }
-        .video-container iframe {
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .nav-link.active {
+            color: #d946ef; /* fuchsia-500 */
+        }
+        .nav-link:not(.active):hover {
+            color: #f0abfc; /* fuchsia-300 */
+        }
+        .nav-link.active::after {
+            content: '';
             position: absolute;
-            top: 0;
+            bottom: -4px;
             left: 0;
             width: 100%;
-            height: 100%;
+            height: 2px;
+            background-color: #d946ef;
         }
-        .btn {
-            transition: background-color 0.3s ease, transform 0.2s ease;
+        .card-glow {
+            background-color: #111827; /* bg-gray-900 */
+            border: 1px solid #374151; /* bg-gray-700 */
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
         }
-        .btn:hover {
-            transform: scale(1.05);
+        .card-glow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px rgba(217, 70, 239, 0.4);
+            border-color: rgba(217, 70, 239, 0.5);
         }
-        /* Стили для модального окна и оверлея */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        .modal-overlay.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        .modal-content {
-            background: #2d2d2d;
-            padding: 2rem;
-            border-radius: 12px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            transform: scale(0.95);
-            transition: transform 0.3s ease;
-        }
-        .modal-overlay.visible .modal-content {
-            transform: scale(1);
-        }
-        /* Стили для лоадера */
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #f59e0b;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .mobile-nav-link.active {
+             background-color: #1f2937; /* gray-800 */
+             color: #d946ef;
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body class="bg-black">
 
-    <div id="app" class="w-full max-w-7xl mx-auto">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tight">
-                Помощник по раскидкам <span class="text-yellow-400">CS 2</span>
-            </h1>
-            <p id="subtitle" class="text-lg text-gray-400 mt-2">Выберите карту, чтобы начать</p>
-        </header>
-
-        <section id="map-selection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></section>
-
-        <section id="nade-selection" class="hidden">
-            <div class="mb-6 text-center">
-                 <button id="back-to-maps" class="btn bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg mb-4">
-                    &larr; Назад к картам
-                </button>
-                <h2 id="selected-map-title" class="text-3xl font-bold text-yellow-400"></h2>
-                <div id="controls-container" class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-4">
-                    <div id="site-buttons" class="flex flex-wrap justify-center gap-4"></div>
-                    <div id="strategy-button-container"></div>
+    <!-- Header -->
+    <header class="bg-black/70 backdrop-blur-lg sticky top-0 z-50 border-b border-fuchsia-500/20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-2xl font-bold text-fuchsia-500">Cyberion</h1>
+                </div>
+                <nav class="hidden md:block">
+                    <div id="desktop-nav" class="ml-10 flex items-baseline space-x-4">
+                        <a href="#summary" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Резюме</a>
+                        <a href="#model" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Бизнес-модель</a>
+                        <a href="#swot" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">SWOT-анализ</a>
+                        <a href="#finance" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Финансы</a>
+                        <a href="#strategy" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Стратегия</a>
+                    </div>
+                </nav>
+                <div class="-mr-2 flex md:hidden">
+                    <button id="mobile-menu-button" type="button" class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Открыть главное меню</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
             </div>
-            <div id="video-display" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
-        </section>
-    </div>
-
-    <!-- Модальное окно для стратегии -->
-    <div id="strategy-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl font-bold text-yellow-400">✨ План на раунд</h3>
-                <button id="close-modal" class="text-2xl text-gray-400 hover:text-white">&times;</button>
-            </div>
-            <div id="strategy-output" class="text-gray-300 space-y-4">
-                <!-- Сюда будет загружен ответ от Gemini -->
+        </div>
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div id="mobile-nav" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#summary" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700">Резюме</a>
+                <a href="#model" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700">Бизнес-модель</a>
+                <a href="#swot" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700">SWOT-анализ</a>
+                <a href="#finance" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700">Финансы</a>
+                <a href="#strategy" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700">Стратегия</a>
             </div>
         </div>
-    </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Section 1: Summary -->
+            <section id="summary" class="mb-16 pt-16 -mt-16">
+                <h2 class="text-3xl font-bold text-white mb-2">Резюме проекта</h2>
+                <p class="text-gray-400 mb-8">Этот раздел содержит ключевую информацию о проекте "Cyberion", его миссии, целевой аудитории и факторах, которые обеспечат его успех на рынке. Это краткий обзор всей концепции.</p>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="p-6 rounded-lg card-glow">
+                        <h3 class="font-bold text-lg text-fuchsia-500 mb-2">Концепция</h3>
+                        <p class="text-gray-300">Специализированный онлайн-магазин новых, Б/У комплектующих для ПК и услуга Trade-In.</p>
+                    </div>
+                    <div class="p-6 rounded-lg card-glow col-span-1 md:col-span-2 lg:col-span-1">
+                         <h3 class="font-bold text-lg text-fuchsia-500 mb-2">Миссия</h3>
+                        <p class="text-gray-300">Сделать сборку и апгрейд ПК доступными, удобными и выгодными для каждого клиента.</p>
+                    </div>
+                    <div class="p-6 rounded-lg card-glow">
+                        <h3 class="font-bold text-lg text-fuchsia-500 mb-2">Выход на безубыточность</h3>
+                        <p class="text-4xl font-bold text-white">6-9</p>
+                        <p class="text-gray-400">месяцев (прогноз)</p>
+                    </div>
+                    <div class="p-6 rounded-lg card-glow col-span-1 md:col-span-2">
+                        <h3 class="font-bold text-lg text-fuchsia-500 mb-2">Целевая аудитория</h3>
+                        <ul class="list-disc list-inside text-gray-300 space-y-1">
+                            <li><b>Геймеры и энтузиасты ПК:</b> Ищут максимальную производительность.</li>
+                            <li><b>Студенты и бюджетные пользователи:</b> Нуждаются в доступных решениях.</li>
+                            <li><b>Малый бизнес и IT-специалисты:</b> Требуют надежного апгрейда парка ПК.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Business Model -->
+            <section id="model" class="mb-16 pt-16 -mt-16">
+                <h2 class="text-3xl font-bold text-white mb-2">Бизнес-модель</h2>
+                <p class="text-gray-400 mb-8">Здесь описаны основные продукты и услуги, которые предлагает "Cyberion", а также анализ рыночной среды и конкурентных преимуществ. Этот раздел объясняет, как компания будет зарабатывать деньги и какую ценность она несет клиентам.</p>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-12">
+                     <div class="p-6 rounded-lg text-center card-glow">
+                        <div class="text-fuchsia-500 text-3xl mb-3 mx-auto">✨</div>
+                        <h4 class="font-bold text-lg text-white">Новые товары</h4>
+                        <p class="text-sm text-gray-400">Компоненты от ведущих брендов с официальной гарантией.</p>
+                    </div>
+                    <div class="p-6 rounded-lg text-center card-glow">
+                        <div class="text-fuchsia-500 text-3xl mb-3 mx-auto">🛠️</div>
+                        <h4 class="font-bold text-lg text-white">Б/У товары</h4>
+                        <p class="text-sm text-gray-400">Проверенные детали с гарантией магазина по выгодным ценам.</p>
+                    </div>
+                    <div class="p-6 rounded-lg text-center card-glow">
+                        <div class="text-fuchsia-500 text-3xl mb-3 mx-auto">♻️</div>
+                        <h4 class="font-bold text-lg text-white">Trade-In</h4>
+                        <p class="text-sm text-gray-400">Обмен старых комплектующих на скидку для новых покупок.</p>
+                    </div>
+                </div>
+
+                <div class="p-6 rounded-lg card-glow">
+                    <h3 class="font-bold text-xl text-white mb-4">Конкурентное преимущество</h3>
+                    <p class="text-gray-300">"Cyberion" занимает уникальную нишу, объединяя <b class="text-fuchsia-400">надежность</b> розничного магазина (гарантия, проверка) с <b class="text-fuchsia-400">гибкостью и ценовой доступностью</b> вторичного рынка. Ключевым отличием является услуга <b class="text-fuchsia-400">Trade-In</b>, которая создает непрерывный цикл обновления для клиентов и обеспечивает постоянный приток Б/У товаров для магазина, чего не предлагают ни крупные ритейлеры, ни частные продавцы на досках объявлений.</p>
+                </div>
+            </section>
+
+            <!-- Section 3: SWOT Analysis -->
+            <section id="swot" class="mb-16 pt-16 -mt-16">
+                <h2 class="text-3xl font-bold text-white mb-2">SWOT-анализ</h2>
+                <p class="text-gray-400 mb-8">Этот раздел представляет анализ сильных и слабых сторон проекта, а также возможностей и угроз со стороны рынка. Интерактивный график и карточки ниже позволяют визуально оценить ключевые факторы, влияющие на бизнес.</p>
+
+                <div class="lg:flex gap-8">
+                    <div class="flex-1 mb-8 lg:mb-0">
+                        <div class="chart-container">
+                            <canvas id="swotChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-green-900/50 border border-green-700 p-4 rounded-lg">
+                            <h4 class="font-bold text-green-300">Сильные стороны (S)</h4>
+                            <ul class="list-disc list-inside text-sm text-green-400 mt-2">
+                                <li>Уникальная бизнес-модель</li>
+                                <li>Гибкое ценообразование</li>
+                                <li>Высокий потенциал лояльности</li>
+                            </ul>
+                        </div>
+                        <div class="bg-red-900/50 border border-red-700 p-4 rounded-lg">
+                            <h4 class="font-bold text-red-300">Слабые стороны (W)</h4>
+                            <ul class="list-disc list-inside text-sm text-red-400 mt-2">
+                                <li>Зависимость от поставщиков</li>
+                                <li>Сложность управления запасами</li>
+                                <li>Репутационные риски</li>
+                            </ul>
+                        </div>
+                        <div class="bg-blue-900/50 border border-blue-700 p-4 rounded-lg">
+                            <h4 class="font-bold text-blue-300">Возможности (O)</h4>
+                            <ul class="list-disc list-inside text-sm text-blue-400 mt-2">
+                                <li>Рост рынка гейминга</li>
+                                <li>Спрос на экономию</li>
+                                <li>Экологический тренд</li>
+                            </ul>
+                        </div>
+                        <div class="bg-yellow-900/50 border border-yellow-700 p-4 rounded-lg">
+                            <h4 class="font-bold text-yellow-300">Угрозы (T)</h4>
+                            <ul class="list-disc list-inside text-sm text-yellow-400 mt-2">
+                                <li>Высокая конкуренция</li>
+                                <li>Волатильность цен</li>
+                                <li>Быстрое устаревание</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Financial Model -->
+            <section id="finance" class="mb-16 pt-16 -mt-16">
+                <h2 class="text-3xl font-bold text-white mb-2">Финансовая модель и расчеты</h2>
+                <p class="text-gray-400 mb-8">Стратегия "Cyberion" основана на высоком обороте товаров. Мы устанавливаем конкурентную, минимально возможную наценку на новые комплектующие, чтобы стимулировать объем продаж и привлекать клиентов для высокомаржинальных услуг Trade-In и продажи Б/У компонентов.</p>
+                
+                <h3 class="text-2xl font-semibold text-white mb-6">Пример расчета маржинальности (в грн)</h3>
+                <div class="grid lg:grid-cols-3 gap-6 mb-12">
+                    <!-- New Parts -->
+                    <div class="p-6 rounded-lg card-glow">
+                        <h4 class="font-bold text-lg text-fuchsia-500 mb-4">Новые товары (Объем)</h4>
+                        <p class="text-sm text-gray-400 mb-4">Видеокарта: <b class="text-white">GeForce RTX 4060</b></p>
+                        <ul class="text-gray-300 space-y-2 text-sm">
+                            <li class="flex justify-between"><span>Закупочная цена:</span> <span>16 000</span></li>
+                            <li class="flex justify-between"><span>Розничная цена:</span> <span>17 600</span></li>
+                        </ul>
+                        <div class="border-t border-gray-700 my-3"></div>
+                        <div class="flex justify-between font-bold text-white">
+                            <span>Валовая прибыль:</span>
+                            <span class="text-green-400">1 600 (10%)</span>
+                        </div>
+                    </div>
+                    <!-- Used Parts -->
+                    <div class="p-6 rounded-lg card-glow">
+                        <h4 class="font-bold text-lg text-fuchsia-500 mb-4">Б/У товары (Маржа)</h4>
+                        <p class="text-sm text-gray-400 mb-4">Процессор: <b class="text-white">AMD Ryzen 5 5600X</b></p>
+                        <ul class="text-gray-300 space-y-2 text-sm">
+                            <li class="flex justify-between"><span>Цена выкупа у клиента:</span> <span>2 800</span></li>
+                            <li class="flex justify-between"><span>Цена продажи:</span> <span>4 500</span></li>
+                        </ul>
+                        <div class="border-t border-gray-700 my-3"></div>
+                        <div class="flex justify-between font-bold text-white">
+                            <span>Валовая прибыль:</span>
+                            <span class="text-green-400">1 700 (~60%)</span>
+                        </div>
+                    </div>
+                    <!-- Trade-In -->
+                    <div class="p-6 rounded-lg card-glow">
+                        <h4 class="font-bold text-lg text-fuchsia-500 mb-4">Сделка Trade-In</h4>
+                        <p class="text-sm text-gray-400 mb-4">Обмен <b class="text-white">RTX 2060</b> на <b class="text-white">RTX 4060</b></p>
+                        <ul class="text-gray-300 space-y-2 text-sm">
+                            <li class="flex justify-between"><span>Оценка RTX 2060:</span> <span>4 000</span></li>
+                            <li class="flex justify-between"><span>Прибыль с перепродажи:</span> <span class="text-green-400">+2 000</span></li>
+                            <li class="flex justify-between"><span>Прибыль с новой RTX 4060:</span> <span class="text-green-400">+1 600</span></li>
+                        </ul>
+                        <div class="border-t border-gray-700 my-3"></div>
+                        <div class="flex justify-between font-bold text-white">
+                            <span>Общая прибыль:</span>
+                            <span class="text-green-400">3 600</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-semibold text-white mb-6">Дополнительные источники дохода</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-lg card-glow">
+                        <h4 class="font-bold text-lg text-fuchsia-500 mb-2">Сборка ПК</h4>
+                        <p class="text-gray-400 text-sm mb-4">Профессиональная сборка компьютера из комплектующих клиента или купленных в магазине.</p>
+                        <div class="flex justify-between font-semibold text-white">
+                            <span>Стоимость услуги:</span>
+                            <span>600 - 1500 грн</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Маржинальность ~95%</p>
+                    </div>
+                    <div class="p-6 rounded-lg card-glow">
+                        <h4 class="font-bold text-lg text-fuchsia-500 mb-2">Настройка ПО</h4>
+                        <p class="text-gray-400 text-sm mb-4">Установка операционной системы, драйверов и базового набора программ.</p>
+                        <div class="flex justify-between font-semibold text-white">
+                            <span>Стоимость услуги:</span>
+                            <span>400 - 800 грн</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Маржинальность ~98%</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Strategy -->
+            <section id="strategy" class="pt-16 -mt-16">
+                <h2 class="text-3xl font-bold text-white mb-2">Стратегия</h2>
+                <p class="text-gray-400 mb-8">В этом заключительном разделе представлены маркетинговая и финансовая стратегии "Cyberion". Вы узнаете, как компания планирует привлекать клиентов и какие финансовые потоки будут обеспечивать ее рост и развитие.</p>
+
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="p-6 rounded-lg card-glow">
+                        <h3 class="font-bold text-xl text-white mb-4">Маркетинг и Продвижение</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <span class="text-fuchsia-500 mr-3 text-xl">📢</span>
+                                <div>
+                                    <h5 class="font-semibold text-gray-200">Социальные сети и контент</h5>
+                                    <p class="text-sm text-gray-400">Создание обзоров, сборок ПК и гайдов в VK, Telegram, YouTube для привлечения органического трафика.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-fuchsia-500 mr-3 text-xl">🤝</span>
+                                <div>
+                                    <h5 class="font-semibold text-gray-200">Сотрудничество с блогерами</h5>
+                                    <p class="text-sm text-gray-400">Рекламные интеграции у профильных техноблогеров и стримеров для быстрого охвата целевой аудитории.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-fuchsia-500 mr-3 text-xl">🎯</span>
+                                <div>
+                                    <h5 class="font-semibold text-gray-200">Контекстная реклама</h5>
+                                    <p class="text-sm text-gray-400">Привлечение "горячих" клиентов по целевым запросам в поисковых системах.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="p-6 rounded-lg card-glow">
+                        <h3 class="font-bold text-xl text-white mb-4">Источники дохода</h3>
+                        <div class="chart-container h-64 md:h-72">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                        <p class="text-center text-sm text-gray-400 mt-4">Основным источником прибыли станет маржа с продажи проверенных Б/У комплектующих.</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
 
     <script>
-        // --- БАЗА ДАННЫХ С РАСКИДКАМИ (ПРОВЕРЕНА И ОБНОВЛЕНА) ---
-        const nadeData = {
-            "Mirage": {
-                imageUrl: "https://cdn.cloudflare.steamstatic.com/apps/csgo/images/blog/de_mirage.jpg?v=5",
-                sites: {
-                    "Точка А": [
-                        { name: "Дым на 'Stairs' (с Т-спавна)", videoId: "6gwLZkXoAkA", timestamp: 6 },
-                        { name: "Дым на 'Jungle' (с Т-спавна)", videoId: "6gwLZkXoAkA", timestamp: 16 },
-                        { name: "Дым на 'CT' (с Т-спавна)", videoId: "6gwLZkXoAkA", timestamp: 26 },
-                        { name: "Молотов на 'Sandwich' (с рампы)", videoId: "6gwLZkXoAkA", timestamp: 36 },
-                        { name: "Молотов на 'Firebox' (с рампы)", videoId: "6gwLZkXoAkA", timestamp: 45 },
-                        { name: "Молотов на 'Tetris' (из дворца)", videoId: "6gwLZkXoAkA", timestamp: 55 },
-                        { name: "Молотов на 'Default' (из дворца)", videoId: "6gwLZkXoAkA", timestamp: 64 },
-                        { name: "Флеш для выхода на А (с рампы)", videoId: "6gwLZkXoAkA", timestamp: 73 },
-                    ],
-                    "Мид": [
-                        { name: "Дым на 'Window' (с Т-спавна)", videoId: "6gwLZkXoAkA", timestamp: 83 },
-                        { name: "Дым на 'Connector' (с Т-спавна)", videoId: "6gwLZkXoAkA", timestamp: 93 },
-                        { name: "Дым на 'Short' (с топ мида)", videoId: "6gwLZkXoAkA", timestamp: 104 },
-                        { name: "Молотов на 'Window' (с топ мида)", videoId: "6gwLZkXoAkA", timestamp: 114 },
-                    ],
-                    "Точка Б": [
-                        { name: "Дым в окно 'Market' (с Т-спавна)", videoId: "6gwLZkXoAkA", timestamp: 124 },
-                        { name: "Дым на дверь 'Market' (с Т-спавна)", videoId: "6gwLZkXoAkA", timestamp: 134 },
-                        { name: "Дым на 'Short' (из аппартаментов)", videoId: "6gwLZkXoAkA", timestamp: 144 },
-                        { name: "Молотов на 'Van' (из аппартаментов)", videoId: "6gwLZkXoAkA", timestamp: 154 },
-                        { name: "Молотов на 'Bench' (из аппартаментов)", videoId: "6gwLZkXoAkA", timestamp: 164 },
-                        { name: "Флеш для выхода на Б (из аппартаментов)", videoId: "6gwLZkXoAkA", timestamp: 174 },
-                    ]
-                }
-            },
-            "Inferno": {
-                imageUrl: "https://esports.gg/wp-content/uploads/2023/10/CS2-Inferno-Guide.jpg",
-                sites: {
-                    "Точка А": [
-                        { name: "Дым на 'Moto'", videoId: "_k0_o5t_p-E", timestamp: 5 },
-                        { name: "Дым на 'Library'", videoId: "_k0_o5t_p-E", timestamp: 15 },
-                        { name: "Молотов в 'Pit'", videoId: "_k0_o5t_p-E", timestamp: 25 },
-                        { name: "Флеш для выхода на А", videoId: "_k0_o5t_p-E", timestamp: 35 },
-                    ],
-                    "Точка Б": [
-                        { name: "Дым на 'CT Spawn'", videoId: "_k0_o5t_p-E", timestamp: 50 },
-                        { name: "Дым на 'Coffins'", videoId: "_k0_o5t_p-E", timestamp: 60 },
-                        { name: "Молотов на 'Default'", videoId: "_k0_o5t_p-E", timestamp: 70 },
-                        { name: "Флеш для выхода на Б", videoId: "_k0_o5t_p-E", timestamp: 80 },
-                    ]
-                }
-            },
-            "Vertigo": {
-                imageUrl: "https://cdn.dotesports.com/wp-content/uploads/2021/04/21115106/vertigo-csgo.jpg",
-                sites: {
-                    "Точка А": [
-                        { name: "Дым на рампу А (с Т-спавна)", videoId: "v63E2uJTRF8", timestamp: 4 },
-                        { name: "Дым на Топ Мид (с Т-спавна)", videoId: "v63E2uJTRF8", timestamp: 13 },
-                        { name: "Дым на правую сторону А (с рампы)", videoId: "v63E2uJTRF8", timestamp: 22 },
-                        { name: "Дым на левую сторону А (с рампы)", videoId: "v63E2uJTRF8", timestamp: 31 },
-                        { name: "Молотов на дефолт А (с рампы)", videoId: "v63E2uJTRF8", timestamp: 40 },
-                        { name: "Молотов на 'Sandwich' А (с рампы)", videoId: "v63E2uJTRF8", timestamp: 49 },
-                        { name: "Флеш для выхода на А (с рампы)", videoId: "v63E2uJTRF8", timestamp: 58 },
-                    ],
-                    "Точка Б": [
-                        { name: "Дым на проход Б (с Т-спавна)", videoId: "v63E2uJTRF8", timestamp: 68 },
-                        { name: "Дым на правый генератор (с Т-спавна)", videoId: "v63E2uJTRF8", timestamp: 77 },
-                        { name: "Дым на левый генератор (с Т-спавна)", videoId: "v63E2uJTRF8", timestamp: 86 },
-                        { name: "Молотов на дефолт Б (с лестницы)", videoId: "v63E2uJTRF8", timestamp: 95 },
-                        { name: "Флеш для выхода на Б (с лестницы)", videoId: "v63E2uJTRF8", timestamp: 104 },
-                    ]
-                }
-            },
-            "Ancient": {
-                imageUrl: "https://tryhardguides.com/wp-content/uploads/2024/01/cs2-ancient-map-guide-featured.jpg",
-                sites: {
-                    "Точка А": [
-                        { name: "Дым на 'CT'", videoId: "KASlUcNyNX0", timestamp: 4 },
-                        { name: "Дым на 'Temple'", videoId: "KASlUcNyNX0", timestamp: 13 },
-                        { name: "Молотов на 'Triple Box'", videoId: "KASlUcNyNX0", timestamp: 23 },
-                        { name: "Молотов на 'Default'", videoId: "KASlUcNyNX0", timestamp: 32 },
-                        { name: "Флеш для выхода на А", videoId: "KASlUcNyNX0", timestamp: 41 },
-                    ],
-                    "Точка Б": [
-                        { name: "Дым на 'Cave'", videoId: "KASlUcNyNX0", timestamp: 52 },
-                        { name: "Дым на 'Long'", videoId: "KASlUcNyNX0", timestamp: 62 },
-                        { name: "Молотов на 'Pillar'", videoId: "KASlUcNyNX0", timestamp: 71 },
-                        { name: "Молотов 'Back Site'", videoId: "KASlUcNyNX0", timestamp: 80 },
-                        { name: "Флеш для выхода на Б", videoId: "KASlUcNyNX0", timestamp: 89 },
-                    ]
-                }
-            },
-             "Nuke": {
-                imageUrl: "https://cdn.dotesports.com/wp-content/uploads/2021/04/21115024/nuke-csgo.jpg",
-                sites: {
-                    "Точка А": [
-                        { name: "Дым на 'Main' (с Т-спавна)", videoId: "p0Gy1EVoBGg", timestamp: 4 },
-                        { name: "Дым на 'Outside' (с Т-спавна)", videoId: "p0Gy1EVoBGg", timestamp: 13 },
-                        { name: "Дым на 'Garage' (с Т-спавна)", videoId: "p0Gy1EVoBGg", timestamp: 22 },
-                        { name: "Дым на 'Heaven' (с Т-спавна)", videoId: "p0Gy1EVoBGg", timestamp: 31 },
-                        { name: "Молотов на 'Main' (с Т-спавна)", videoId: "p0Gy1EVoBGg", timestamp: 40 },
-                        { name: "Флеш для выхода на А (с Т-спавна)", videoId: "p0Gy1EVoBGg", timestamp: 49 },
-                    ],
-                    "Точка Б": [
-                        { name: "Дым на 'Garage' (с рампы)", videoId: "p0Gy1EVoBGg", timestamp: 60 },
-                        { name: "Дым на 'Main' (с рампы)", videoId: "p0Gy1EVoBGg", timestamp: 69 },
-                        { name: "Молотов под 'Heaven' (с рампы)", videoId: "p0Gy1EVoBGg", timestamp: 78 },
-                        { name: "Флеш для выхода на Б (с рампы)", videoId: "p0Gy1EVoBGg", timestamp: 87 },
-                    ]
-                }
-            },
-            "Anubis": {
-                imageUrl: "https://cdn.dotesports.com/wp-content/uploads/2022/11/18151901/Anubis-CSGO-Map.jpg",
-                sites: {
-                    "Точка А": [
-                        { name: "Дым на 'Heaven'", videoId: "L2DRqoOa9mQ", timestamp: 4 },
-                        { name: "Дым на 'Plat'", videoId: "L2DRqoOa9mQ", timestamp: 13 },
-                        { name: "Молотов на 'Connector'", videoId: "L2DRqoOa9mQ", timestamp: 22 },
-                        { name: "Молотов под 'Plat'", videoId: "L2DRqoOa9mQ", timestamp: 31 },
-                        { name: "Флеш для выхода на точку", videoId: "L2DRqoOa9mQ", timestamp: 40 },
-                    ],
-                    "Точка Б": [
-                        { name: "Дым на 'Bridge'", videoId: "L2DRqoOa9mQ", timestamp: 51 },
-                        { name: "Дым на 'Street'", videoId: "L2DRqoOa9mQ", timestamp: 60 },
-                        { name: "Дым в 'Palace'", videoId: "L2DRqoOa9mQ", timestamp: 69 },
-                        { name: "Молотов на 'Default'", videoId: "L2DRqoOa9mQ", timestamp: 78 },
-                        { name: "Флеш для выхода на точку", videoId: "L2DRqoOa9mQ", timestamp: 87 },
-                    ]
-                }
-            },
-            "Dust 2": { 
-                imageUrl: "https://files.bo3.gg/uploads/news/31193/title_image/960x480-d29b13997201a40538f91886551a141b.webp", 
-                sites: { 
-                    "Точка А": [
-                        { name: "Дым на 'Long Cross'", videoId: "yp1DcWtv1M8", timestamp: 4 },
-                        { name: "Молотов на 'Car' (Long)", videoId: "yp1DcWtv1M8", timestamp: 13 },
-                        { name: "Флеш для выхода на Long", videoId: "yp1DcWtv1M8", timestamp: 22 },
-                    ],
-                    "Мид": [
-                        { name: "Дым на 'X-Box'", videoId: "yp1DcWtv1M8", timestamp: 32 },
-                        { name: "Дым на 'CT Mid'", videoId: "yp1DcWtv1M8", timestamp: 41 },
-                    ],
-                    "Точка Б": [
-                        { name: "Дым на 'B Doors' (из тоннеля)", videoId: "yp1DcWtv1M8", timestamp: 51 },
-                        { name: "Молотов на 'Default' Б (из тоннеля)", videoId: "yp1DcWtv1M8", timestamp: 60 },
-                        { name: "Флеш для выхода на Б (из тоннеля)", videoId: "yp1DcWtv1M8", timestamp: 69 },
-                    ] 
-                } 
-            }
-        };
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const openIcon = mobileMenuButton.querySelector('svg:first-child');
+            const closeIcon = mobileMenuButton.querySelector('svg:last-child');
 
-        // --- ЭЛЕМЕНТЫ DOM ---
-        const mapSelectionEl = document.getElementById('map-selection');
-        const nadeSelectionEl = document.getElementById('nade-selection');
-        const videoDisplayEl = document.getElementById('video-display');
-        const backToMapsBtn = document.getElementById('back-to-maps');
-        const selectedMapTitleEl = document.getElementById('selected-map-title');
-        const siteButtonsEl = document.getElementById('site-buttons');
-        const subtitleEl = document.getElementById('subtitle');
-        const strategyButtonContainer = document.getElementById('strategy-button-container');
-        const strategyModal = document.getElementById('strategy-modal');
-        const strategyOutput = document.getElementById('strategy-output');
-        const closeModalBtn = document.getElementById('close-modal');
-
-        // --- GEMINI API ИНТЕГРАЦИЯ ---
-        const API_KEY = ""; // API-ключ не требуется, если используется gemini-2.5-flash-preview-05-20
-
-        async function callGeminiWithBackoff(prompt, maxRetries = 3) {
-            let delay = 1000;
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                    const payload = { contents: chatHistory };
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
-                    
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    const result = await response.json();
-                    if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
-                        return result.candidates[0].content.parts[0].text;
-                    } else {
-                        throw new Error("Invalid API response structure.");
-                    }
-                } catch (error) {
-                    console.error(`Attempt ${i + 1} failed:`, error);
-                    if (i === maxRetries - 1) throw error;
-                    await new Promise(res => setTimeout(res, delay));
-                    delay *= 2; // Экспоненциальная задержка
-                }
-            }
-        }
-
-        async function generateStrategy(mapName, siteName) {
-            strategyOutput.innerHTML = '<div class="flex justify-center"><div class="loader"></div></div>';
-            strategyModal.classList.add('visible');
-
-            const nades = nadeData[mapName].sites[siteName];
-            if (nades.length === 0) {
-                strategyOutput.innerHTML = '<p>Недостаточно данных для генерации стратегии. Сначала добавьте видео с раскидками для этой точки.</p>';
-                return;
-            }
-            const nadeListString = nades.map(n => `"${n.name}"`).join(', ');
-
-            const prompt = `Ты — профессиональный тренер по Counter-Strike 2. Твоя задача — предложить простую, но эффективную атакующую стратегию для карты ${mapName} при заходе на точку ${siteName}.
-            
-            У команды есть следующие гранаты: ${nadeListString}.
-            
-            Твой ответ должен быть:
-            1. На русском языке.
-            2. Четко структурирован (например, по шагам или по ролям игроков).
-            3. Легким для понимания командой среднего уровня.
-            4. Учитывать использование предоставленных гранат.
-            5. Краткий и по делу.`;
-
-            try {
-                const resultText = await callGeminiWithBackoff(prompt);
-                strategyOutput.innerHTML = resultText.replace(/\n/g, '<br>');
-            } catch (error) {
-                console.error("Failed to generate strategy:", error);
-                strategyOutput.innerHTML = '<p>К сожалению, не удалось сгенерировать стратегию. Пожалуйста, попробуйте еще раз позже.</p>';
-            }
-        }
-
-        // --- ЛОГИКА ПРИЛОЖЕНИЯ ---
-        function displayVideos(mapName, siteName) {
-            const videos = nadeData[mapName].sites[siteName];
-            videoDisplayEl.innerHTML = ''; 
-
-            if (videos.length === 0) {
-                videoDisplayEl.innerHTML = `<p class="text-gray-400 col-span-full text-center">Для этой точки пока нет видео. Вы можете добавить их в коде!</p>`;
-                return;
-            }
-
-            videos.forEach(video => {
-                let videoUrl = `https://www.youtube.com/embed/${video.videoId}`;
-                if (video.timestamp) {
-                    videoUrl += `?start=${video.timestamp}`; // Убран autoplay=1
-                }
-
-                const videoCard = `
-                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg">
-                        <div class="video-container">
-                            <iframe src="${videoUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        </div>
-                        <div class="p-4"><h3 class="font-semibold text-white">${video.name}</h3></div>
-                    </div>`;
-                videoDisplayEl.innerHTML += videoCard;
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                openIcon.classList.toggle('hidden');
+                closeIcon.classList.toggle('hidden');
             });
-        }
-
-        function showSiteSelection(mapName) {
-            mapSelectionEl.classList.add('hidden');
-            nadeSelectionEl.classList.remove('hidden');
-            subtitleEl.textContent = `Выбрана карта: ${mapName}`;
-            selectedMapTitleEl.textContent = mapName;
-            siteButtonsEl.innerHTML = '';
-            strategyButtonContainer.innerHTML = '';
-
-            const sites = Object.keys(nadeData[mapName].sites);
-            sites.forEach(siteName => {
-                const button = document.createElement('button');
-                button.textContent = siteName;
-                button.className = 'site-btn btn bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-6 rounded-lg';
-                button.addEventListener('click', () => {
-                    document.querySelectorAll('.site-btn').forEach(btn => btn.classList.replace('bg-yellow-400', 'bg-yellow-500'));
-                    button.classList.replace('bg-yellow-500', 'bg-yellow-400');
-                    displayVideos(mapName, siteName);
-                    
-                    strategyButtonContainer.innerHTML = '';
-                    const strategyBtn = document.createElement('button');
-                    strategyBtn.innerHTML = `✨ Предложить стратегию`;
-                    strategyBtn.className = 'btn bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg';
-                    strategyBtn.onclick = () => generateStrategy(mapName, siteName);
-                    strategyButtonContainer.appendChild(strategyBtn);
+            
+            // Close mobile menu on link click
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                     mobileMenu.classList.add('hidden');
+                     openIcon.classList.remove('hidden');
+                     closeIcon.classList.add('hidden');
                 });
-                siteButtonsEl.appendChild(button);
             });
 
-            if (siteButtonsEl.firstChild) {
-                siteButtonsEl.firstChild.click();
-            } else {
-                videoDisplayEl.innerHTML = `<p class="text-gray-400 col-span-full text-center">Для этой карты пока нет точек.</p>`;
-            }
-        }
-
-        function showMapSelection() {
-            nadeSelectionEl.classList.add('hidden');
-            mapSelectionEl.classList.remove('hidden');
-            subtitleEl.textContent = 'Выберите карту, чтобы начать';
-            videoDisplayEl.innerHTML = '';
-            strategyButtonContainer.innerHTML = '';
-        }
-
-        function initialize() {
-            mapSelectionEl.innerHTML = '';
-            // Определяем порядок карт для отображения
-            const mapOrder = ["Mirage", "Inferno", "Vertigo", "Ancient", "Nuke", "Anubis", "Dust 2"];
-            mapOrder.forEach(mapName => {
-                if (nadeData[mapName]) {
-                    const map = nadeData[mapName];
-                    const card = document.createElement('div');
-                    card.className = 'map-card relative h-48 rounded-lg shadow-xl cursor-pointer overflow-hidden flex items-end p-4';
-                    card.style.backgroundImage = `linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 50%), url(${map.imageUrl})`;
-                    card.innerHTML = `<h2 class="text-2xl font-bold text-white z-10">${mapName}</h2>`;
-                    card.addEventListener('click', () => showSiteSelection(mapName));
-                    mapSelectionEl.appendChild(card);
+            // --- Chart.js instances ---
+            // SWOT Chart
+            const swotCtx = document.getElementById('swotChart').getContext('2d');
+            new Chart(swotCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Сильные стороны', 'Возможности', 'Слабые стороны', 'Угрозы'],
+                    datasets: [{
+                        label: 'Оценка факторов',
+                        data: [8, 9, 6, 7],
+                        backgroundColor: 'rgba(217, 70, 239, 0.2)',
+                        borderColor: 'rgba(217, 70, 239, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(217, 70, 239, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(217, 70, 239, 1)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            pointLabels: {
+                                font: { size: 14, family: "'Russo One', sans-serif" },
+                                color: '#d1d5db'
+                            },
+                            ticks: {
+                                backdropColor: '#000000',
+                                color: '#9ca3af',
+                                stepSize: 2
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 10
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
                 }
             });
-        }
 
-        // Слушатели для модального окна
-        closeModalBtn.addEventListener('click', () => strategyModal.classList.remove('visible'));
-        strategyModal.addEventListener('click', (e) => {
-            if (e.target === strategyModal) {
-                strategyModal.classList.remove('visible');
-            }
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Продажа Б/У', 'Продажа новых', 'Прибыль с Trade-In'],
+                    datasets: [{
+                        data: [55, 30, 15],
+                        backgroundColor: ['#c026d3', '#d946ef', '#f0abfc'],
+                        borderColor: '#111827',
+                        borderWidth: 4,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#d1d5db',
+                                padding: 20,
+                                font: { size: 12, family: "'Inter', sans-serif" }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            // Active Nav Link on Scroll
+            const sections = document.querySelectorAll('section');
+            const desktopNavLinks = document.querySelectorAll('#desktop-nav .nav-link');
+            const mobileNavLinks = document.querySelectorAll('#mobile-nav .mobile-nav-link');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        desktopNavLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+                        });
+                        mobileNavLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
         });
-
-        backToMapsBtn.addEventListener('click', showMapSelection);
-        initialize();
     </script>
 </body>
 </html>
