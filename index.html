@@ -26,54 +26,97 @@
                 transform: translateY(0);
             }
         }
+        /* Стиль для указателя */
+        .pointer {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #facc15; /* yellow-400 */
+        }
+        /* Простая тень для текста */
+        .text-shadow {
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 to-slate-800 flex items-center justify-center h-screen text-white p-4">
+<body class="bg-gradient-to-br from-gray-900 to-slate-800 flex items-center justify-center h-screen text-white p-4 overflow-hidden">
 
     <!-- Основной контейнер -->
     <div id="main-container" class="text-center transition-all duration-500">
         
-        <!-- Кнопка -->
-        <button id="inviteButton" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-purple-400">
-            ✨ Нажми, если ты Юля Фетисова ✨
-        </button>
+        <!-- Контейнер для колеса -->
+        <div id="wheel-container" class="relative flex flex-col items-center justify-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-200 mb-6">Юля, пусть судьба решит!</h1>
+            <div class="pointer absolute top-[-10px] z-10"></div> <!-- Указатель -->
+            
+            <div id="wheel" class="w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-gray-600 relative flex flex-col items-center justify-center text-xl transition-transform duration-[4000ms] ease-out overflow-hidden">
+                <!-- Верхняя секция -->
+                <div class="absolute top-0 w-full h-1/2 bg-indigo-600 flex items-center justify-center">
+                    <span class="text-xl md:text-2xl font-bold text-white text-shadow">Работаем</span>
+                </div>
+                <!-- Нижняя секция -->
+                <div class="absolute bottom-0 w-full h-1/2 bg-purple-600 flex items-center justify-center">
+                    <span class="text-xl md:text-2xl font-bold text-white text-shadow">Перекур</span>
+                </div>
+            </div>
+
+            <button id="spinButton" class="mt-8 bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-purple-400">
+                ✨ Крутить колесо ✨
+            </button>
+        </div>
 
         <!-- Скрытое приглашение -->
-        <div id="invitation" class="hidden mt-12 p-8 bg-gray-800 bg-opacity-50 rounded-2xl shadow-2xl backdrop-blur-sm border border-gray-700 max-w-md mx-auto">
-            <h1 class="text-3xl md:text-4xl font-bold text-purple-300 mb-4">Юля, это тебе!</h1>
+        <div id="invitation" class="hidden p-8 bg-gray-800 bg-opacity-50 rounded-2xl shadow-2xl backdrop-blur-sm border border-gray-700 max-w-md mx-auto">
+            <h1 class="text-3xl md:text-4xl font-bold text-purple-300 mb-4">Колесо сказало "ДА"!</h1>
             <p class="text-lg md:text-xl text-gray-200">
                 Не пора ли сделать паузу? Мир подождет.
             </p>
             <p class="text-2xl md:text-3xl font-bold mt-6 animate-pulse">
-                Го на перекур! 🚬😉
+                Го на перекур! �😉
             </p>
         </div>
 
     </div>
 
     <script>
-        // Находим кнопку и скрытый блок по их ID
-        const inviteButton = document.getElementById('inviteButton');
+        const spinButton = document.getElementById('spinButton');
+        const wheel = document.getElementById('wheel');
+        const wheelContainer = document.getElementById('wheel-container');
         const invitationDiv = document.getElementById('invitation');
-        const mainContainer = document.getElementById('main-container');
 
-        // Добавляем обработчик события "клик" на кнопку
-        inviteButton.addEventListener('click', () => {
-            // Прячем кнопку с плавной анимацией
-            inviteButton.classList.add('transition', 'duration-500', 'ease-in-out', 'opacity-0', 'transform', '-translate-y-4');
-            
-            // Через небольшую задержку, чтобы кнопка успела исчезнуть
+        spinButton.addEventListener('click', () => {
+            // Отключаем кнопку, чтобы избежать повторных нажатий
+            spinButton.disabled = true;
+            spinButton.classList.remove('hover:bg-purple-700', 'hover:scale-105');
+            spinButton.classList.add('cursor-not-allowed', 'bg-gray-600');
+
+            // Рассчитываем конечный угол. Он должен попасть в сектор "Перекур" (нижняя половина).
+            // Указатель находится сверху, поэтому нам нужно, чтобы колесо остановилось на 180 градусах.
+            const extraSpins = Math.floor(Math.random() * 5) + 5; // 5-9 полных оборотов для зрелищности
+            const targetAngle = 180; // Всегда останавливается ровно на секторе "Перекур"
+            const finalAngle = (extraSpins * 360) + targetAngle;
+
+            // Применяем вращение к элементу колеса
+            wheel.style.transform = `rotate(${finalAngle}deg)`;
+
+            // Ждем окончания анимации вращения
             setTimeout(() => {
-                inviteButton.style.display = 'none'; // Полностью убираем кнопку
+                // Плавно прячем колесо и заголовок
+                wheelContainer.classList.add('transition', 'duration-500', 'ease-in-out', 'opacity-0', 'transform', 'scale-75');
                 
-                // Показываем приглашение
-                invitationDiv.classList.remove('hidden');
-                // Добавляем класс для анимации появления
-                invitationDiv.classList.add('fade-in');
+                setTimeout(() => {
+                    wheelContainer.style.display = 'none';
+                    
+                    // Показываем финальное приглашение
+                    invitationDiv.classList.remove('hidden');
+                    invitationDiv.classList.add('fade-in');
+                }, 500);
 
-            }, 500); // 500 миллисекунд = 0.5 секунды
+            }, 4500); // 4000ms анимация + 500ms запас
         });
     </script>
 
 </body>
 </html>
+�
