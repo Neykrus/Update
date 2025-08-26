@@ -1,480 +1,79 @@
 <!DOCTYPE html>
-<html lang="uk" class="scroll-smooth">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Інтерактивний бізнес-план | Медуза</title>
-    <!-- Chosen Palette: Neon Fury -->
-    <!-- Application Structure Plan: The application is designed as a single-page interactive dashboard with a fixed sidebar for navigation. This structure was chosen over a linear document to allow non-linear exploration of the business plan, enabling users (e.g., investors) to quickly jump to sections of interest like financials or SWOT analysis. The user flow starts with a high-level summary and encourages deeper dives into the Business Model, SWOT, and Strategy sections. This enhances usability and makes the complex information more digestible. -->
-    <!-- Visualization & Content Choices: 
-        - Summary -> Inform -> Key Metrics Cards -> HTML/CSS -> To highlight core numbers and mission.
-        - Products/Services -> Organize -> Icon-based cards -> HTML/CSS -> For quick visual differentiation of services.
-        - Competitors -> Compare -> Comparison Table -> HTML/CSS -> For a clear, structured comparison.
-        - SWOT Analysis -> Organize/Compare -> Interactive 2x2 Grid + Radar Chart -> HTML/CSS for grid, Chart.js/Canvas for chart -> The grid provides detailed text, while the radar chart offers a quick, quantitative visual summary of the analysis, making it more impactful.
-        - Revenue Streams -> Compare/Inform -> Don't Chart -> Chart.js/Canvas -> To visually represent the contribution of each income source, which is more intuitive than a text list.
-        - Milestones -> Change -> Timeline -> HTML/CSS -> To clearly present the projected business development path.
-        - Justification: These choices transform a static text document into an engaging analytical tool, prioritizing data synthesis and user interaction.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <title>Специальное приглашение</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Russo+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000000;
-            color: #d1d5db; /* text-gray-300 */
         }
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Russo One', sans-serif;
-            letter-spacing: 0.05em;
+        /* Анимация появления */
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
         }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 400px;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
-        }
-        .nav-link {
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        .nav-link.active {
-            color: #d946ef; /* fuchsia-500 */
-        }
-        .nav-link:not(.active):hover {
-            color: #f0abfc; /* fuchsia-300 */
-        }
-        .nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: #d946ef;
-        }
-        .card-glow {
-            background-color: #111827; /* bg-gray-900 */
-            border: 1px solid #374151; /* bg-gray-700 */
-            transition: box-shadow 0.3s ease, transform 0.3s ease;
-        }
-        .card-glow:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 25px rgba(217, 70, 239, 0.4);
-            border-color: rgba(217, 70, 239, 0.5);
-        }
-        .mobile-nav-link.active {
-             background-color: #1f2937; /* gray-800 */
-             color: #d946ef;
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
-<body class="bg-black">
+<body class="bg-gradient-to-br from-gray-900 to-slate-800 flex items-center justify-center h-screen text-white p-4">
 
-    <!-- Header -->
-    <header class="bg-black/70 backdrop-blur-lg sticky top-0 z-50 border-b border-fuchsia-500/20">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex-shrink-0">
-                    <h1 class="text-2xl font-bold text-fuchsia-500">Медуза</h1>
-                </div>
-                <nav class="hidden md:block">
-                    <div id="desktop-nav" class="ml-10 flex items-baseline space-x-4">
-                        <a href="#summary" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Резюме</a>
-                        <a href="#model" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Бізнес-модель</a>
-                        <a href="#swot" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">SWOT-аналіз</a>
-                        <a href="#finance" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Фінанси</a>
-                        <a href="#strategy" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Стратегія</a>
-                    </div>
-                </nav>
-                <div class="-mr-2 flex md:hidden">
-                    <button id="mobile-menu-button" type="button" class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
-                        <span class="sr-only">Відкрити головне меню</span>
-                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
+    <!-- Основной контейнер -->
+    <div id="main-container" class="text-center transition-all duration-500">
+        
+        <!-- Кнопка -->
+        <button id="inviteButton" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-purple-400">
+            ✨ Нажми, если ты Юля Фетисова ✨
+        </button>
+
+        <!-- Скрытое приглашение -->
+        <div id="invitation" class="hidden mt-12 p-8 bg-gray-800 bg-opacity-50 rounded-2xl shadow-2xl backdrop-blur-sm border border-gray-700 max-w-md mx-auto">
+            <h1 class="text-3xl md:text-4xl font-bold text-purple-300 mb-4">Юля, это тебе!</h1>
+            <p class="text-lg md:text-xl text-gray-200">
+                Не пора ли сделать паузу? Мир подождет.
+            </p>
+            <p class="text-2xl md:text-3xl font-bold mt-6 animate-pulse">
+                Го на перекур! 🚬😉
+            </p>
         </div>
-        <!-- Mobile Menu -->
-        <div class="md:hidden hidden" id="mobile-menu">
-            <div id="mobile-nav" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#summary" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700">Резюме</a>
-                <a href="#model" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700">Бізнес-модель</a>
-                <a href="#swot" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700">SWOT-аналіз</a>
-                <a href="#finance" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700">Фінанси</a>
-                <a href="#strategy" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700">Стратегія</a>
-            </div>
-        </div>
-    </header>
 
-    <!-- Main Content -->
-    <main>
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-            <!-- Section 1: Summary -->
-            <section id="summary" class="mb-16 pt-16 -mt-16">
-                <h2 class="text-3xl font-bold text-white mb-2">Резюме проєкту</h2>
-                <p class="text-gray-400 mb-8">Цей розділ містить ключову інформацію про проєкт "Медуза", його місію, цільову аудиторію та фактори, які забезпечать його успіх на ринку. Це короткий огляд усієї концепції.</p>
-                
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="p-6 rounded-lg card-glow">
-                        <h3 class="font-bold text-lg text-fuchsia-500 mb-2">Концепція</h3>
-                        <p class="text-gray-300">Спеціалізований онлайн-магазин нових, вживаних комплектуючих для ПК та послуга Trade-In.</p>
-                    </div>
-                    <div class="p-6 rounded-lg card-glow col-span-1 md:col-span-2 lg:col-span-1">
-                         <h3 class="font-bold text-lg text-fuchsia-500 mb-2">Місія</h3>
-                        <p class="text-gray-300">Зробити збірку та апгрейд ПК доступними, зручними та вигідними для кожного клієнта.</p>
-                    </div>
-                    <div class="p-6 rounded-lg card-glow">
-                        <h3 class="font-bold text-lg text-fuchsia-500 mb-2">Вихід на беззбитковість</h3>
-                        <p class="text-4xl font-bold text-white">6-9</p>
-                        <p class="text-gray-400">місяців (прогноз)</p>
-                    </div>
-                    <div class="p-6 rounded-lg card-glow col-span-1 md:col-span-2">
-                        <h3 class="font-bold text-lg text-fuchsia-500 mb-2">Цільова аудиторія</h3>
-                        <ul class="list-disc list-inside text-gray-300 space-y-1">
-                            <li><b>Геймери та ентузіасти ПК:</b> Шукають максимальну продуктивність.</li>
-                            <li><b>Студенти та бюджетні користувачі:</b> Потребують доступних рішень.</li>
-                            <li><b>Малий бізнес та IT-фахівці:</b> Вимагають надійного апгрейду парку ПК.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section 2: Business Model -->
-            <section id="model" class="mb-16 pt-16 -mt-16">
-                <h2 class="text-3xl font-bold text-white mb-2">Бізнес-модель</h2>
-                <p class="text-gray-400 mb-8">Тут описані основні продукти та послуги, які пропонує "Медуза", а також аналіз ринкового середовища та конкурентних переваг. Цей розділ пояснює, як компанія зароблятиме гроші та яку цінність вона несе клієнтам.</p>
-                
-                <div class="grid md:grid-cols-3 gap-6 mb-12">
-                     <div class="p-6 rounded-lg text-center card-glow">
-                        <div class="text-fuchsia-500 text-3xl mb-3 mx-auto">✨</div>
-                        <h4 class="font-bold text-lg text-white">Нові товари</h4>
-                        <p class="text-sm text-gray-400">Компоненти від провідних брендів з офіційною гарантією.</p>
-                    </div>
-                    <div class="p-6 rounded-lg text-center card-glow">
-                        <div class="text-fuchsia-500 text-3xl mb-3 mx-auto">🛠️</div>
-                        <h4 class="font-bold text-lg text-white">Вживані товари</h4>
-                        <p class="text-sm text-gray-400">Перевірені деталі з гарантією магазину за вигідними цінами.</p>
-                    </div>
-                    <div class="p-6 rounded-lg text-center card-glow">
-                        <div class="text-fuchsia-500 text-3xl mb-3 mx-auto">♻️</div>
-                        <h4 class="font-bold text-lg text-white">Trade-In</h4>
-                        <p class="text-sm text-gray-400">Обмін старих комплектуючих на знижку для нових покупок.</p>
-                    </div>
-                </div>
-
-                <div class="p-6 rounded-lg card-glow">
-                    <h3 class="font-bold text-xl text-white mb-4">Конкурентна перевага</h3>
-                    <p class="text-gray-300">"Медуза" займає унікальну нішу, поєднуючи <b class="text-fuchsia-400">надійність</b> роздрібного магазину (гарантія, перевірка) з <b class="text-fuchsia-400">гнучкістю та ціновою доступністю</b> вторинного ринку. Ключовою відмінністю є послуга <b class="text-fuchsia-400">Trade-In</b>, яка створює безперервний цикл оновлення для клієнтів та забезпечує постійний приплив вживаних товарів для магазину, чого не пропонують ні великі рітейлери, ні приватні продавці на дошках оголошень.</p>
-                </div>
-            </section>
-
-            <!-- Section 3: SWOT Analysis -->
-            <section id="swot" class="mb-16 pt-16 -mt-16">
-                <h2 class="text-3xl font-bold text-white mb-2">SWOT-аналіз</h2>
-                <p class="text-gray-400 mb-8">Цей розділ представляє аналіз сильних і слабких сторін проєкту, а також можливостей та загроз з боку ринку. Інтерактивний графік та картки нижче дозволяють візуально оцінити ключові фактори, що впливають на бізнес.</p>
-
-                <div class="lg:flex gap-8">
-                    <div class="flex-1 mb-8 lg:mb-0">
-                        <div class="chart-container">
-                            <canvas id="swotChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="bg-green-900/50 border border-green-700 p-4 rounded-lg">
-                            <h4 class="font-bold text-green-300">Сильні сторони (S)</h4>
-                            <ul class="list-disc list-inside text-sm text-green-400 mt-2">
-                                <li>Унікальна бізнес-модель</li>
-                                <li>Гнучке ціноутворення</li>
-                                <li>Високий потенціал лояльності</li>
-                            </ul>
-                        </div>
-                        <div class="bg-red-900/50 border border-red-700 p-4 rounded-lg">
-                            <h4 class="font-bold text-red-300">Слабкі сторони (W)</h4>
-                            <ul class="list-disc list-inside text-sm text-red-400 mt-2">
-                                <li>Залежність від постачальників</li>
-                                <li>Складність управління запасами</li>
-                                <li>Репутаційні ризики</li>
-                            </ul>
-                        </div>
-                        <div class="bg-blue-900/50 border border-blue-700 p-4 rounded-lg">
-                            <h4 class="font-bold text-blue-300">Можливості (O)</h4>
-                            <ul class="list-disc list-inside text-sm text-blue-400 mt-2">
-                                <li>Зростання ринку геймінгу</li>
-                                <li>Попит на економію</li>
-                                <li>Екологічний тренд</li>
-                            </ul>
-                        </div>
-                        <div class="bg-yellow-900/50 border border-yellow-700 p-4 rounded-lg">
-                            <h4 class="font-bold text-yellow-300">Загрози (T)</h4>
-                            <ul class="list-disc list-inside text-sm text-yellow-400 mt-2">
-                                <li>Висока конкуренція</li>
-                                <li>Волатильність цін</li>
-                                <li>Швидке старіння технологій</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section 4: Financial Model -->
-            <section id="finance" class="mb-16 pt-16 -mt-16">
-                <h2 class="text-3xl font-bold text-white mb-2">Фінансова модель та розрахунки</h2>
-                <p class="text-gray-400 mb-8">Стратегія "Медуза" базується на високому обороті товарів. Ми встановлюємо конкурентну, мінімально можливу націнку на нові комплектуючі, щоб стимулювати обсяг продажів та залучати клієнтів для високомаржинальних послуг Trade-In та продажу вживаних компонентів.</p>
-                
-                <h3 class="text-2xl font-semibold text-white mb-6">Приклад розрахунку маржинальності (в грн)</h3>
-                <div class="grid lg:grid-cols-3 gap-6 mb-12">
-                    <!-- New Parts -->
-                    <div class="p-6 rounded-lg card-glow">
-                        <h4 class="font-bold text-lg text-fuchsia-500 mb-4">Нові товари (Обсяг)</h4>
-                        <p class="text-sm text-gray-400 mb-4">Відеокарта: <b class="text-white">GeForce RTX 4060</b></p>
-                        <ul class="text-gray-300 space-y-2 text-sm">
-                            <li class="flex justify-between"><span>Закупівельна ціна:</span> <span>16 000</span></li>
-                            <li class="flex justify-between"><span>Роздрібна ціна:</span> <span>17 600</span></li>
-                        </ul>
-                        <div class="border-t border-gray-700 my-3"></div>
-                        <div class="flex justify-between font-bold text-white">
-                            <span>Валовий прибуток:</span>
-                            <span class="text-green-400">1 600 (10%)</span>
-                        </div>
-                    </div>
-                    <!-- Used Parts -->
-                    <div class="p-6 rounded-lg card-glow">
-                        <h4 class="font-bold text-lg text-fuchsia-500 mb-4">Вживані товари (Маржа)</h4>
-                        <p class="text-sm text-gray-400 mb-4">Процесор: <b class="text-white">AMD Ryzen 5 5600X</b></p>
-                        <ul class="text-gray-300 space-y-2 text-sm">
-                            <li class="flex justify-between"><span>Ціна викупу у клієнта:</span> <span>2 800</span></li>
-                            <li class="flex justify-between"><span>Ціна продажу:</span> <span>4 500</span></li>
-                        </ul>
-                        <div class="border-t border-gray-700 my-3"></div>
-                        <div class="flex justify-between font-bold text-white">
-                            <span>Валовий прибуток:</span>
-                            <span class="text-green-400">1 700 (~60%)</span>
-                        </div>
-                    </div>
-                    <!-- Trade-In -->
-                    <div class="p-6 rounded-lg card-glow">
-                        <h4 class="font-bold text-lg text-fuchsia-500 mb-4">Угода Trade-In</h4>
-                        <p class="text-sm text-gray-400 mb-4">Обмін <b class="text-white">RTX 2060</b> на <b class="text-white">RTX 4060</b></p>
-                        <ul class="text-gray-300 space-y-2 text-sm">
-                            <li class="flex justify-between"><span>Оцінка RTX 2060:</span> <span>4 000</span></li>
-                            <li class="flex justify-between"><span>Прибуток з перепродажу:</span> <span class="text-green-400">+2 000</span></li>
-                            <li class="flex justify-between"><span>Прибуток з нової RTX 4060:</span> <span class="text-green-400">+1 600</span></li>
-                        </ul>
-                        <div class="border-t border-gray-700 my-3"></div>
-                        <div class="flex justify-between font-bold text-white">
-                            <span>Загальний прибуток:</span>
-                            <span class="text-green-400">3 600</span>
-                        </div>
-                    </div>
-                </div>
-
-                <h3 class="text-2xl font-semibold text-white mb-6">Додаткові джерела доходу</h3>
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div class="p-6 rounded-lg card-glow">
-                        <h4 class="font-bold text-lg text-fuchsia-500 mb-2">Збірка ПК</h4>
-                        <p class="text-gray-400 text-sm mb-4">Професійна збірка комп'ютера з комплектуючих клієнта або куплених у магазині.</p>
-                        <div class="flex justify-between font-semibold text-white">
-                            <span>Вартість послуги:</span>
-                            <span>600 - 1500 грн</span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">Маржинальність ~95%</p>
-                    </div>
-                    <div class="p-6 rounded-lg card-glow">
-                        <h4 class="font-bold text-lg text-fuchsia-500 mb-2">Налаштування ПЗ</h4>
-                        <p class="text-gray-400 text-sm mb-4">Встановлення операційної системи, драйверів та базового набору програм.</p>
-                        <div class="flex justify-between font-semibold text-white">
-                            <span>Вартість послуги:</span>
-                            <span>400 - 800 грн</span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">Маржинальність ~98%</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section 5: Strategy -->
-            <section id="strategy" class="pt-16 -mt-16">
-                <h2 class="text-3xl font-bold text-white mb-2">Стратегія</h2>
-                <p class="text-gray-400 mb-8">У цьому заключному розділі представлені маркетингова та фінансова стратегії "Медуза". Ви дізнаєтеся, як компанія планує залучати клієнтів та які фінансові потоки забезпечуватимуть її зростання та розвиток.</p>
-
-                <div class="grid lg:grid-cols-2 gap-8">
-                    <div class="p-6 rounded-lg card-glow">
-                        <h3 class="font-bold text-xl text-white mb-4">Маркетинг та Просування</h3>
-                        <ul class="space-y-3">
-                            <li class="flex items-start">
-                                <span class="text-fuchsia-500 mr-3 text-xl">📢</span>
-                                <div>
-                                    <h5 class="font-semibold text-gray-200">Соціальні мережі та контент</h5>
-                                    <p class="text-sm text-gray-400">Створення оглядів, збірок ПК та гайдів в **Instagram, Telegram, YouTube** для залучення органічного трафіку.</p>
-                                </div>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="text-fuchsia-500 mr-3 text-xl">🤝</span>
-                                <div>
-                                    <h5 class="font-semibold text-gray-200">Співпраця з блогерами</h5>
-                                    <p class="text-sm text-gray-400">Рекламні інтеграції у профільних техноблогерів та стрімерів для швидкого охоплення цільової аудиторії.</p>
-                                </div>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="text-fuchsia-500 mr-3 text-xl">🎯</span>
-                                <div>
-                                    <h5 class="font-semibold text-gray-200">Контекстна реклама</h5>
-                                    <p class="text-sm text-gray-400">Залучення "гарячих" клієнтів за цільовими запитами в пошукових системах.</p>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="p-6 rounded-lg card-glow">
-                        <h3 class="font-bold text-xl text-white mb-4">Джерела доходу</h3>
-                        <div class="chart-container h-64 md:h-72">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
-                        <p class="text-center text-sm text-gray-400 mt-4">Основним джерелом прибутку стане маржа з продажу перевірених вживаних комплектуючих.</p>
-                    </div>
-                </div>
-            </section>
-
-        </div>
-    </main>
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Mobile Menu Toggle
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const openIcon = mobileMenuButton.querySelector('svg:first-child');
-            const closeIcon = mobileMenuButton.querySelector('svg:last-child');
+        // Находим кнопку и скрытый блок по их ID
+        const inviteButton = document.getElementById('inviteButton');
+        const invitationDiv = document.getElementById('invitation');
+        const mainContainer = document.getElementById('main-container');
 
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-                openIcon.classList.toggle('hidden');
-                closeIcon.classList.toggle('hidden');
-            });
+        // Добавляем обработчик события "клик" на кнопку
+        inviteButton.addEventListener('click', () => {
+            // Прячем кнопку с плавной анимацией
+            inviteButton.classList.add('transition', 'duration-500', 'ease-in-out', 'opacity-0', 'transform', '-translate-y-4');
             
-            // Close mobile menu on link click
-            document.querySelectorAll('#mobile-menu a').forEach(link => {
-                link.addEventListener('click', () => {
-                     mobileMenu.classList.add('hidden');
-                     openIcon.classList.remove('hidden');
-                     closeIcon.classList.add('hidden');
-                });
-            });
+            // Через небольшую задержку, чтобы кнопка успела исчезнуть
+            setTimeout(() => {
+                inviteButton.style.display = 'none'; // Полностью убираем кнопку
+                
+                // Показываем приглашение
+                invitationDiv.classList.remove('hidden');
+                // Добавляем класс для анимации появления
+                invitationDiv.classList.add('fade-in');
 
-            // --- Chart.js instances ---
-            // SWOT Chart
-            const swotCtx = document.getElementById('swotChart').getContext('2d');
-            new Chart(swotCtx, {
-                type: 'radar',
-                data: {
-                    labels: ['Сильні сторони', 'Можливості', 'Слабкі сторони', 'Загрози'],
-                    datasets: [{
-                        label: 'Оцінка факторів',
-                        data: [8, 9, 6, 7],
-                        backgroundColor: 'rgba(217, 70, 239, 0.2)',
-                        borderColor: 'rgba(217, 70, 239, 1)',
-                        borderWidth: 2,
-                        pointBackgroundColor: 'rgba(217, 70, 239, 1)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgba(217, 70, 239, 1)'
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            pointLabels: {
-                                font: { size: 14, family: "'Russo One', sans-serif" },
-                                color: '#d1d5db'
-                            },
-                            ticks: {
-                                backdropColor: '#000000',
-                                color: '#9ca3af',
-                                stepSize: 2
-                            },
-                            suggestedMin: 0,
-                            suggestedMax: 10
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
-            });
-
-            // Revenue Chart
-            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-            new Chart(revenueCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Продаж вживаних', 'Продаж нових', 'Прибуток з Trade-In'],
-                    datasets: [{
-                        data: [55, 30, 15],
-                        backgroundColor: ['#c026d3', '#d946ef', '#f0abfc'],
-                        borderColor: '#111827',
-                        borderWidth: 4,
-                        hoverOffset: 8
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#d1d5db',
-                                padding: 20,
-                                font: { size: 12, family: "'Inter', sans-serif" }
-                            }
-                        }
-                    },
-                    cutout: '60%'
-                }
-            });
-
-            // Active Nav Link on Scroll
-            const sections = document.querySelectorAll('section');
-            const desktopNavLinks = document.querySelectorAll('#desktop-nav .nav-link');
-            const mobileNavLinks = document.querySelectorAll('#mobile-nav .mobile-nav-link');
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const id = entry.target.id;
-                        desktopNavLinks.forEach(link => {
-                            link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
-                        });
-                        mobileNavLinks.forEach(link => {
-                            link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
-                        });
-                    }
-                });
-            }, { rootMargin: "-50% 0px -50% 0px" });
-
-            sections.forEach(section => {
-                observer.observe(section);
-            });
+            }, 500); // 500 миллисекунд = 0.5 секунды
         });
     </script>
+
 </body>
 </html>
