@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru" class="scroll-smooth">
+<html lang="uk" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Аналитическая панель: Back to School 3.0</title>
+    <title>Аналітична панель: Back to School 3.0</title>
     
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,9 +19,8 @@
     <style>
         :root {
             --bg-color: #020414;
-            /* ОБНОВЛЕНО: Новая цветовая схема */
-            --primary-color: #40E0D0; /* Бирюзовый */
-            --secondary-color: #FFFFFF; /* Белый */
+            --primary-color: #40E0D0; /* Бірюзовий */
+            --secondary-color: #FFFFFF; /* Білий */
             --text-primary: #f0f2f5;
             --text-secondary: #a0a5b6;
             --border-color: rgba(64, 224, 208, 0.2);
@@ -31,7 +30,6 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
-            /* ОБНОВЛЕНО: Возвращен фон с туманностью */
             background-image: url('https://images.unsplash.com/photo-1535025183041-0991a977e25b?q=80&w=1923&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
@@ -55,7 +53,6 @@
             transform: translateY(0) scale(1);
         }
         
-        /* ОБНОВЛЕНО: Новые классы для текста */
         .accent-text-main {
             color: var(--primary-color);
         }
@@ -64,7 +61,6 @@
             color: var(--secondary-color);
         }
 
-        /* ОБНОВЛЕНО: Цвет границы заголовка */
         .section-header {
             border-left: 4px solid var(--primary-color);
             padding-left: 1rem;
@@ -81,7 +77,6 @@
             padding-top: 2rem;
             border-top: 1px solid var(--border-color);
         }
-        /* ОБНОВЛЕНО: Стили кнопки аккордеона */
         .toggle-details-btn {
             background-color: rgba(64, 224, 208, 0.1);
             border: 1px solid rgba(64, 224, 208, 0.2);
@@ -98,7 +93,6 @@
             transform: rotate(180deg);
         }
         
-        /* ОБНОВЛЕНО: Стиль кнопки "Наверх" */
         #to-top-button {
             position: fixed;
             bottom: 2rem;
@@ -126,7 +120,6 @@
 </head>
 <body class="text-gray-200">
 
-    <!-- ОБНОВЛЕНО: Заменена навигационная панель -->
     <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-neutral-800 shadow-lg">
         <div class="container mx-auto flex justify-center items-center p-4">
             <h1 class="text-xl md:text-2xl font-semibold text-white">Vape Департамент</h1>
@@ -136,45 +129,43 @@
     <div class="container mx-auto p-4 sm:p-6 lg:p-8 space-y-16">
         <header class="text-center pt-12">
             <h1 class="text-5xl md:text-7xl font-black text-white uppercase tracking-wider">Back to School</h1>
-            <p class="text-xl text-white mt-4">Стратегия развития Vape направления
-                Сентябрь
+            <p class="text-xl text-white mt-4">Стратегія розвитку Vape напрямку
+                Вересень
             </p>
         </header>
 
         <main class="space-y-16">
             
             <section id="cartridge" class="content-block p-6 md:p-8">
-                <h2 class="text-4xl font-bold mb-8 text-white section-header">Анализ Акции с Картриджами</h2>
+                <h2 class="text-4xl font-bold mb-8 text-white section-header">Аналіз акції з Картриджами</h2>
                 <div class="grid md:grid-cols-3 gap-8 text-center">
                     <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Средняя стоимость списания</p>
+                        <p class="text-sm text-gray-400">Середня вартість списання</p>
                         <p class="text-4xl font-bold text-red-500 mt-2"><span class="counter-value" data-target="79311">0</span> грн</p>
                     </div>
                     <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Прогноз роста продаж</p>
-                        <!-- ОБНОВЛЕНО: Цвет текста -->
+                        <p class="text-sm text-gray-400">Прогноз зростання продажів</p>
                         <p class="text-4xl font-bold accent-text-main mt-2">+<span class="counter-value" data-target="40">0</span>%</p>
                     </div>
                     <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <!-- ОБНОВЛЕНО: Заменен текст и счетчик -->
-                        <p class="text-sm text-gray-400">Ожидаемый прирост количества покупателей</p>
-                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="250">0</span> чел.</p>
+                        <p class="text-sm text-gray-400">Очікуваний приріст кількості покупців</p>
+                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="250">0</span> чол.</p>
                     </div>
                 </div>
                 <div class="details-container">
                     <div class="grid lg:grid-cols-2 gap-8">
                         <div>
-                            <h4 class="font-bold text-xl mb-4 text-white text-center">Анализ прошлого периода</h4>
+                            <h4 class="font-bold text-xl mb-4 text-white text-center">Аналіз минулого періоду</h4>
                             <div class="relative h-64 w-full">
                                 <canvas id="cartridgePastAnalysisChart"></canvas>
                             </div>
                             <ul class="mt-4 text-sm text-gray-400 space-y-1 text-center">
-                                <li>Рост продаж в пиковую неделю: <b class="text-green-400">+39%</b></li>
-                                <li>Прирост клиентов: <b class="text-green-400">+25%</b></li>
+                                <li>Зростання продажів у піковий тиждень: <b class="text-green-400">+39%</b></li>
+                                <li>Приріст клієнтів: <b class="text-green-400">+25%</b></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-bold text-xl mb-4 text-white text-center">Интерактивный калькулятор</h4>
+                            <h4 class="font-bold text-xl mb-4 text-white text-center">Інтерактивний калькулятор</h4>
                             <div class="overflow-x-auto max-h-72">
                                 <table class="w-full text-sm text-left text-gray-400">
                                     <thead class="text-xs text-gray-300 uppercase sticky top-0 z-10 bg-neutral-950">
@@ -189,11 +180,11 @@
                             </div>
                             <div class="mt-4 pt-4 border-t border-[var(--border-color)] grid grid-cols-2 gap-4 text-center">
                                 <div>
-                                    <p class="text-gray-400 text-xs">Средняя маржа набора</p>
+                                    <p class="text-gray-400 text-xs">Середня маржа набору</p>
                                     <p id="average-margin" class="text-2xl font-bold text-white">0.00 грн.</p>
                                 </div>
                                 <div>
-                                    <p class="text-gray-400 text-xs">Необходимый рост продаж</p>
+                                    <p class="text-gray-400 text-xs">Необхідне зростання продажів</p>
                                     <p id="required-growth" class="text-2xl font-bold text-red-500">0.00%</p>
                                 </div>
                             </div>
@@ -201,106 +192,103 @@
                     </div>
                 </div>
                 <button class="toggle-details-btn w-full mt-8 py-2 rounded-lg font-semibold flex items-center justify-center">
-                    <span class="mr-2">Детальный анализ и калькулятор</span>
+                    <span class="mr-2">Детальний аналіз та калькулятор</span>
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
             </section>
 
             <section id="glovo" class="content-block p-6 md:p-8">
-                <h2 class="text-4xl font-bold mb-8 text-white section-header">Прогноз Запуска Glovo</h2>
+                <h2 class="text-4xl font-bold mb-8 text-white section-header">Промо старт Glovo + InBottle</h2>
                 <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
                     <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Прогноз заказов/неделя</p>
-                        <p class="text-4xl font-bold text-white mt-2 counter-value" data-target="150">0</p>
+                        <p class="text-sm text-gray-400">Прогноз замовлень за 2 тижні</p>
+                        <p class="text-4xl font-bold text-white mt-2 counter-value" data-target="100">0</p>
                     </div>
                     <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Средний чек</p>
+                        <p class="text-sm text-gray-400">Середній чек</p>
                         <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="550">0</span> грн</p>
                     </div>
                     <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Стоимость промо (1 нед)</p>
+                        <p class="text-sm text-gray-400">Вартість промо (1 тиж)</p>
                         <p class="text-2xl font-bold text-green-400 mt-2">0 грн</p>
-                        <p class="text-xs text-gray-500">(за счет поставщика)</p>
+                        <p class="text-xs text-gray-500">(за рахунок постачальника)</p>
                     </div>
                     <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Охват новой аудитории</p>
-                        <!-- ОБНОВЛЕНО: Цвет текста -->
+                        <p class="text-sm text-gray-400">Охоплення нової аудиторії</p>
                         <p class="text-4xl font-bold accent-text-main mt-2">+<span class="counter-value" data-target="35">0</span>%</p>
                     </div>
                 </div>
                 <div class="details-container">
                     <div class="grid md:grid-cols-2 gap-8">
                         <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Цели и KPI</h4>
+                            <h4 class="font-bold text-xl mb-2 text-white">Цілі та KPI</h4>
                             <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Привлечь <b>100+</b> новых клиентов за первую неделю.</li>
-                                <li>Достичь <b>50+</b> заказов в неделю к концу месяца.</li>
-                                <li>Удержать средний чек доставки на отметке <b>500+</b> грн.</li>
-                                <!-- ОБНОВЛЕНО: Добавлен новый пункт -->
-                                <li>Дарить жидкость `in-bottle` к каждому заказу от <b>500 грн</b>.</li>
+                                <li>Залучити <b>100+</b> нових клієнтів за перший тиждень.</li>
+                                <li>Досягти <b>100+</b> замовлень до кінця місяця (за 2 тижні).</li>
+                                <li>Утримати середній чек доставки на позначці <b>500+</b> грн.</li>
+                                <li>Дарувати рідину `InBottle` до кожного замовлення від <b>500 грн</b>.</li>
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Финансовый прогноз</h4>
+                            <h4 class="font-bold text-xl mb-2 text-white">Фінансовий прогноз</h4>
                             <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Прогнозируемый оборот: <b>~82 500 грн/неделя.</b></li>
-                                <li>Затраты на подарки: <b>0 грн</b> (за счет поставщика).</li>
+                                <li>Прогнозований оборот: <b>~82 500 грн/тиждень.</b></li>
+                                <li>Витрати на подарунки: <b>0 грн</b> (за рахунок постачальника).</li>
                             </ul>
                         </div>
                     </div>
                 </div>
                 <button class="toggle-details-btn w-full mt-8 py-2 rounded-lg font-semibold flex items-center justify-center">
-                    <span class="mr-2">Плановые показатели</span>
+                    <span class="mr-2">Планові показники</span>
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
             </section>
 
             <section id="powerkit" class="content-block p-6 md:p-8">
-                <h2 class="text-4xl font-bold mb-8 text-white section-header">Инициатива "PowerKit"</h2>
+                <h2 class="text-4xl font-bold mb-8 text-white section-header">Ініціатива "PowerKit"</h2>
                  <div class="grid md:grid-cols-3 gap-8 text-center">
                     <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Цель по сбору устройств</p>
+                        <p class="text-sm text-gray-400">Мета зі збору пристроїв</p>
                         <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="500">0</span> шт.</p>
                     </div>
                     <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Средний бонус клиенту</p>
+                        <p class="text-sm text-gray-400">Середній бонус клієнту</p>
                         <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="100">0</span> грн</p>
                     </div>
                     <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Прогноз роста LTV</p>
-                        <!-- ОБНОВЛЕНО: Цвет текста -->
+                        <p class="text-sm text-gray-400">Прогноз зростання LTV</p>
                         <p class="text-4xl font-bold accent-text-main mt-2">+<span class="counter-value" data-target="15">0</span>%</p>
                     </div>
                 </div>
                 <div class="details-container">
                      <div class="grid md:grid-cols-2 gap-8">
                         <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Цели и KPI</h4>
+                            <h4 class="font-bold text-xl mb-2 text-white">Цілі та KPI</h4>
                             <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Собрать <b>500+</b> устройств за месяц.</li>
-                                <li>Увеличить retention rate на <b>5%</b> среди участников.</li>
-                                 <li>Получить <b>10+</b> упоминаний в локальных СМИ/блогах.</li>
+                                <li>Зібрати <b>500+</b> пристроїв за місяць.</li>
+                                <li>Збільшити retention rate на <b>5%</b> серед учасників.</li>
+                                 <li>Отримати <b>10+</b> згадок у локальних ЗМІ/блогах.</li>
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Финансовый прогноз</h4>
+                            <h4 class="font-bold text-xl mb-2 text-white">Фінансовий прогноз</h4>
                             <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Общие затраты на бонусы: <b>~50 000 грн.</b></li>
-                                <li>Дополнительный оборот от участников: <b>~150 000 грн.</b></li>
-                                <li>PR-ценность: <b>нематериальный актив.</b></li>
+                                <li>Загальні витрати на бонуси: <b>~50 000 грн.</b></li>
+                                <li>Додатковий оборот від учасників: <b>~150 000 грн.</b></li>
+                                <li>PR-цінність: <b>нематеріальний актив.</b></li>
                             </ul>
                         </div>
                     </div>
                 </div>
                  <button class="toggle-details-btn w-full mt-8 py-2 rounded-lg font-semibold flex items-center justify-center">
-                    <span class="mr-2">Детальный анализ</span>
+                    <span class="mr-2">Детальний аналіз</span>
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
             </section>
         </main>
     </div>
     
-    <button id="to-top-button" aria-label="Вернуться наверх">
+    <button id="to-top-button" aria-label="Повернутися нагору">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7-7" /></svg>
     </button>
 
@@ -373,20 +361,18 @@
                 new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ['До акции', 'Во время', 'После акции'],
+                        labels: ['До акції', 'Під час', 'Після акції'],
                         datasets: [{
-                            label: 'Продажи, грн',
+                            label: 'Продажі, грн',
                             data: [452828, 569133, 477562],
-                            // ОБНОВЛЕНО: Цвета графика
                             backgroundColor: 'rgba(64, 224, 208, 0.7)',
                             borderColor: 'rgba(64, 224, 208, 1)',
                             borderWidth: 1,
                             yAxisID: 'y',
                         }, {
-                            label: 'Клиенты',
+                            label: 'Клієнти',
                             data: [625, 847, 728],
                             type: 'line',
-                            // ОБНОВЛЕНО: Цвета графика
                             borderColor: 'rgba(255, 255, 255, 1)',
                             backgroundColor: 'rgba(255, 255, 255, 0.2)',
                             tension: 0.2,
@@ -441,10 +427,10 @@
                      const timer = setInterval(() => {
                          current += increment;
                          if (current >= target) {
-                             el.innerText = target.toLocaleString('ru-RU');
+                             el.innerText = target.toLocaleString('uk-UA');
                              clearInterval(timer);
                          } else {
-                             el.innerText = current.toLocaleString('ru-RU');
+                             el.innerText = current.toLocaleString('uk-UA');
                          }
                      }, stepTime);
                  };
