@@ -1,122 +1,485 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Специальное приглашение</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Аналитическая панель: Back to School 3.0</title>
+    
+    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
+        :root {
+            --bg-color: #020414;
+            /* ОБНОВЛЕНО: Новая цветовая схема */
+            --primary-color: #40E0D0; /* Бирюзовый */
+            --secondary-color: #FFFFFF; /* Белый */
+            --text-primary: #f0f2f5;
+            --text-secondary: #a0a5b6;
+            --border-color: rgba(64, 224, 208, 0.2);
+            --surface-color: rgba(30, 30, 35, 0.6);
+        }
+
         body {
             font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            /* ОБНОВЛЕНО: Возвращен фон с туманностью */
+            background-image: url('https://images.unsplash.com/photo-1535025183041-0991a977e25b?q=80&w=1923&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
-        /* Анимация появления */
-        .fade-in {
-            animation: fadeIn 1s ease-in-out;
+
+        .content-block {
+            background-color: var(--surface-color); 
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+
+        .content-block.is-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
-        /* Стиль для указателя */
-        .pointer {
-            width: 0;
-            height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 30px solid #facc15; /* yellow-400 */
+        
+        /* ОБНОВЛЕНО: Новые классы для текста */
+        .accent-text-main {
+            color: var(--primary-color);
         }
-        /* Простая тень для текста */
-        .text-shadow {
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+        
+        .accent-text-secondary {
+            color: var(--secondary-color);
+        }
+
+        /* ОБНОВЛЕНО: Цвет границы заголовка */
+        .section-header {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1rem;
+        }
+
+        .details-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.9s ease-in-out, margin-top 0.7s ease-in-out, padding-top 0.7s ease-in-out;
+        }
+        .details-container.open {
+            max-height: 1200px;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+        /* ОБНОВЛЕНО: Стили кнопки аккордеона */
+        .toggle-details-btn {
+            background-color: rgba(64, 224, 208, 0.1);
+            border: 1px solid rgba(64, 224, 208, 0.2);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .toggle-details-btn:hover {
+            background-color: rgba(64, 224, 208, 0.2);
+        }
+        .toggle-details-btn svg {
+            transition: transform 0.5s ease;
+        }
+        .details-container.open + .toggle-details-btn svg {
+            transform: rotate(180deg);
+        }
+        
+        /* ОБНОВЛЕНО: Стиль кнопки "Наверх" */
+        #to-top-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--primary-color);
+            color: #020414;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            z-index: 100;
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+        #to-top-button.visible {
+            opacity: 1;
+            transform: scale(1);
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 to-slate-800 flex items-center justify-center h-screen text-white p-4 overflow-hidden">
+<body class="text-gray-200">
 
-    <!-- Основной контейнер -->
-    <div id="main-container" class="text-center transition-all duration-500">
-        
-        <!-- Контейнер для колеса -->
-        <div id="wheel-container" class="relative flex flex-col items-center justify-center">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-200 mb-6">Юля, пусть судьба решит!</h1>
-            <div class="pointer absolute top-[-10px] z-10"></div> <!-- Указатель -->
+    <header class="sticky top-0 z-50 bg-black shadow-lg">
+        <nav class="container mx-auto flex justify-center items-center p-4 space-x-4 md:space-x-8">
+            <!-- ОБНОВЛЕНО: Цвет текста навигации -->
+            <a href="#cartridge" class="text-gray-300 hover:text-[var(--primary-color)] transition-colors font-medium text-lg">Картриджи</a>
+            <a href="#glovo" class="text-gray-300 hover:text-[var(--primary-color)] transition-colors font-medium text-lg">Glovo</a>
+            <a href="#powerkit" class="text-gray-300 hover:text-[var(--primary-color)] transition-colors font-medium text-lg">PowerKit</a>
+        </nav>
+    </header>
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 space-y-16">
+        <header class="text-center pt-12">
+            <h1 class="text-5xl md:text-7xl font-black text-white uppercase tracking-wider">Back to School</h1>
+            <p class="text-xl text-white mt-4">Стратегия развития Vape направления
+                Сентябрь
+            </p>
+        </header>
+
+        <main class="space-y-16">
             
-            <div id="wheel" class="w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-gray-600 relative flex flex-col items-center justify-center text-xl transition-transform duration-[4000ms] ease-out overflow-hidden">
-                <!-- Верхняя секция -->
-                <div class="absolute top-0 w-full h-1/2 bg-indigo-600 flex items-center justify-center">
-                    <span class="text-xl md:text-2xl font-bold text-white text-shadow">Работаем</span>
+            <section id="cartridge" class="content-block p-6 md:p-8">
+                <h2 class="text-4xl font-bold mb-8 text-white section-header">Анализ Акции с Картриджами</h2>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                        <p class="text-sm text-gray-400">Средняя стоимость списания</p>
+                        <p class="text-4xl font-bold text-red-500 mt-2"><span class="counter-value" data-target="79311">0</span> грн</p>
+                    </div>
+                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                        <p class="text-sm text-gray-400">Прогноз роста продаж</p>
+                        <!-- ОБНОВЛЕНО: Цвет текста -->
+                        <p class="text-4xl font-bold accent-text-main mt-2">+<span class="counter-value" data-target="40">0</span>%</p>
+                    </div>
+                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                        <!-- ОБНОВЛЕНО: Заменен текст и счетчик -->
+                        <p class="text-sm text-gray-400">Ожидаемый прирост количества покупателей</p>
+                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="250">0</span> чел.</p>
+                    </div>
                 </div>
-                <!-- Нижняя секция -->
-                <div class="absolute bottom-0 w-full h-1/2 bg-purple-600 flex items-center justify-center">
-                    <span class="text-xl md:text-2xl font-bold text-white text-shadow">Перекур</span>
+                <div class="details-container">
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="font-bold text-xl mb-4 text-white text-center">Анализ прошлого периода</h4>
+                            <div class="relative h-64 w-full">
+                                <canvas id="cartridgePastAnalysisChart"></canvas>
+                            </div>
+                            <ul class="mt-4 text-sm text-gray-400 space-y-1 text-center">
+                                <li>Рост продаж в пиковую неделю: <b class="text-green-400">+39%</b></li>
+                                <li>Прирост клиентов: <b class="text-green-400">+25%</b></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-xl mb-4 text-white text-center">Интерактивный калькулятор</h4>
+                            <div class="overflow-x-auto max-h-72">
+                                <table class="w-full text-sm text-left text-gray-400">
+                                    <thead class="text-xs text-gray-300 uppercase sticky top-0 z-10 bg-neutral-950">
+                                        <tr>
+                                            <th class="px-4 py-3"><input type="checkbox" id="select-all-checkbox" class="form-checkbox"></th>
+                                            <th class="px-6 py-3">Промо Товар</th>
+                                            <th class="px-6 py-3 text-right">Промо-маржа</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="financial-table-body"></tbody>
+                                </table>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-[var(--border-color)] grid grid-cols-2 gap-4 text-center">
+                                <div>
+                                    <p class="text-gray-400 text-xs">Средняя маржа набора</p>
+                                    <p id="average-margin" class="text-2xl font-bold text-white">0.00 грн.</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-xs">Необходимый рост продаж</p>
+                                    <p id="required-growth" class="text-2xl font-bold text-red-500">0.00%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                <button class="toggle-details-btn w-full mt-8 py-2 rounded-lg font-semibold flex items-center justify-center">
+                    <span class="mr-2">Детальный анализ и калькулятор</span>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+            </section>
 
-            <button id="spinButton" class="mt-8 bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-purple-400">
-                ✨ Крутить колесо ✨
-            </button>
-        </div>
+            <section id="glovo" class="content-block p-6 md:p-8">
+                <h2 class="text-4xl font-bold mb-8 text-white section-header">Прогноз Запуска Glovo</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                        <p class="text-sm text-gray-400">Прогноз заказов/неделя</p>
+                        <p class="text-4xl font-bold text-white mt-2 counter-value" data-target="150">0</p>
+                    </div>
+                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                        <p class="text-sm text-gray-400">Средний чек</p>
+                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="550">0</span> грн</p>
+                    </div>
+                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                        <p class="text-sm text-gray-400">Стоимость промо (1 нед)</p>
+                        <p class="text-2xl font-bold text-green-400 mt-2">0 грн</p>
+                        <p class="text-xs text-gray-500">(за счет поставщика)</p>
+                    </div>
+                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                        <p class="text-sm text-gray-400">Охват новой аудитории</p>
+                        <!-- ОБНОВЛЕНО: Цвет текста -->
+                        <p class="text-4xl font-bold accent-text-main mt-2">+<span class="counter-value" data-target="35">0</span>%</p>
+                    </div>
+                </div>
+                <div class="details-container">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="font-bold text-xl mb-2 text-white">Цели и KPI</h4>
+                            <ul class="list-disc list-inside text-gray-400 space-y-1">
+                                <li>Привлечь <b>100+</b> новых клиентов за первую неделю.</li>
+                                <li>Достичь <b>50+</b> заказов в неделю к концу месяца.</li>
+                                <li>Удержать средний чек доставки на отметке <b>500+</b> грн.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-xl mb-2 text-white">Финансовый прогноз</h4>
+                            <ul class="list-disc list-inside text-gray-400 space-y-1">
+                                <li>Прогнозируемый оборот: <b>~82 500 грн/неделя.</b></li>
+                                <li>Затраты на подарки: <b>0 грн</b> (за счет поставщика).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <button class="toggle-details-btn w-full mt-8 py-2 rounded-lg font-semibold flex items-center justify-center">
+                    <span class="mr-2">Плановые показатели</span>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+            </section>
 
-        <!-- Скрытое приглашение -->
-        <div id="invitation" class="hidden p-8 bg-gray-800 bg-opacity-50 rounded-2xl shadow-2xl backdrop-blur-sm border border-gray-700 max-w-md mx-auto">
-            <h1 class="text-3xl md:text-4xl font-bold text-purple-300 mb-4">Колесо сказало "ДА"!</h1>
-            <p class="text-lg md:text-xl text-gray-200">
-                Не пора ли сделать паузу? Мир подождет.
-            </p>
-            <p class="text-2xl md:text-3xl font-bold mt-6 animate-pulse">
-                Го на перекур! �😉
-            </p>
-        </div>
-
+            <section id="powerkit" class="content-block p-6 md:p-8">
+                <h2 class="text-4xl font-bold mb-8 text-white section-header">Инициатива "PowerKit"</h2>
+                 <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                        <p class="text-sm text-gray-400">Цель по сбору устройств</p>
+                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="500">0</span> шт.</p>
+                    </div>
+                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                        <p class="text-sm text-gray-400">Средний бонус клиенту</p>
+                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="100">0</span> грн</p>
+                    </div>
+                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                        <p class="text-sm text-gray-400">Прогноз роста LTV</p>
+                        <!-- ОБНОВЛЕНО: Цвет текста -->
+                        <p class="text-4xl font-bold accent-text-main mt-2">+<span class="counter-value" data-target="15">0</span>%</p>
+                    </div>
+                </div>
+                <div class="details-container">
+                     <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="font-bold text-xl mb-2 text-white">Цели и KPI</h4>
+                            <ul class="list-disc list-inside text-gray-400 space-y-1">
+                                <li>Собрать <b>500+</b> устройств за месяц.</li>
+                                <li>Увеличить retention rate на <b>5%</b> среди участников.</li>
+                                 <li>Получить <b>10+</b> упоминаний в локальных СМИ/блогах.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-xl mb-2 text-white">Финансовый прогноз</h4>
+                            <ul class="list-disc list-inside text-gray-400 space-y-1">
+                                <li>Общие затраты на бонусы: <b>~50 000 грн.</b></li>
+                                <li>Дополнительный оборот от участников: <b>~150 000 грн.</b></li>
+                                <li>PR-ценность: <b>нематериальный актив.</b></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                 <button class="toggle-details-btn w-full mt-8 py-2 rounded-lg font-semibold flex items-center justify-center">
+                    <span class="mr-2">Детальный анализ</span>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+            </section>
+        </main>
     </div>
+    
+    <button id="to-top-button" aria-label="Вернуться наверх">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7-7" /></svg>
+    </button>
 
     <script>
-        const spinButton = document.getElementById('spinButton');
-        const wheel = document.getElementById('wheel');
-        const wheelContainer = document.getElementById('wheel-container');
-        const invitationDiv = document.getElementById('invitation');
+        const DashboardApp = {
+            init() {
+                document.addEventListener('DOMContentLoaded', () => {
+                    this.initScrollAnimations();
+                    this.initToTopButton();
+                    this.initAccordions();
+                    this.initFinancialCalculator();
+                    this.initCartridgeChart(); 
+                });
+            },
+            
+            initAccordions() {
+                const buttons = document.querySelectorAll('.toggle-details-btn');
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const detailsContainer = button.previousElementSibling;
+                        detailsContainer.classList.toggle('open');
+                    });
+                });
+            },
 
-        spinButton.addEventListener('click', () => {
-            // Отключаем кнопку, чтобы избежать повторных нажатий
-            spinButton.disabled = true;
-            spinButton.classList.remove('hover:bg-purple-700', 'hover:scale-105');
-            spinButton.classList.add('cursor-not-allowed', 'bg-gray-600');
+            initFinancialCalculator() {
+                const tableBody = document.getElementById('financial-table-body');
+                const selectAllCheckbox = document.getElementById('select-all-checkbox');
+                if (!tableBody || !selectAllCheckbox) return;
 
-            // Рассчитываем конечный угол. Он должен попасть в сектор "Перекур" (нижняя половина).
-            // Указатель находится сверху, поэтому нам нужно, чтобы колесо остановилось на 180 градусах.
-            const extraSpins = Math.floor(Math.random() * 5) + 5; // 5-9 полных оборотов для зрелищности
-            const targetAngle = 180; // Всегда останавливается ровно на секторе "Перекур"
-            const finalAngle = (extraSpins * 360) + targetAngle;
+                const financialData = [
+                    { name: 'Chaser Mix Ultra 30ml', promoMargin: 60.25, checked: true },
+                    { name: 'Chaser Black 30ml', promoMargin: 109.75, checked: false },
+                    { name: 'Chaser Pods 30ml', promoMargin: 109.75, checked: false },
+                    { name: 'Chaser Lux 30ml', promoMargin: 136.00, checked: false },
+                    { name: 'Octobar Black Limit 30ml', promoMargin: 53.50, checked: false },
+                    { name: 'Octobar NFT 30 ml/50 mg', promoMargin: 64.50, checked: false },
+                    { name: 'Octobar Prime 30ml', promoMargin: 136.00, checked: false },
+                    { name: 'Punch 30ml/5mg', promoMargin: 109.50, checked: false },
+                    { name: 'Mixbar', promoMargin: 70.50, checked: false },
+                    { name: 'Lucky', promoMargin: 91.50, checked: false }
+                ];
 
-            // Применяем вращение к элементу колеса
-            wheel.style.transform = `rotate(${finalAngle}deg)`;
+                tableBody.innerHTML = '';
+                financialData.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-neutral-800 hover:bg-neutral-800/50 transition-colors text-xs';
+                    row.innerHTML = `
+                        <td class="px-4 py-2"><input type="checkbox" id="promo-${index}" class="form-checkbox promo-checkbox" data-promo-margin="${item.promoMargin}" ${item.checked ? 'checked' : ''}></td>
+                        <th scope="row" class="px-6 py-2 font-medium text-white whitespace-nowrap">${item.name}</th>
+                        <td class="px-6 py-2 font-bold accent-text-main text-right">${item.promoMargin.toFixed(2)}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
 
-            // Ждем окончания анимации вращения
-            setTimeout(() => {
-                // Плавно прячем колесо и заголовок
-                wheelContainer.classList.add('transition', 'duration-500', 'ease-in-out', 'opacity-0', 'transform', 'scale-75');
+                const updateHandler = this.updateFinancials.bind(this);
+                document.querySelectorAll('.promo-checkbox').forEach(cb => cb.addEventListener('change', updateHandler));
+                selectAllCheckbox.addEventListener('change', (e) => {
+                    document.querySelectorAll('.promo-checkbox').forEach(cb => cb.checked = e.target.checked);
+                    updateHandler();
+                });
+
+                updateHandler();
+            },
+
+            initCartridgeChart() {
+                const ctx = document.getElementById('cartridgePastAnalysisChart')?.getContext('2d');
+                if (!ctx) return;
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['До акции', 'Во время', 'После акции'],
+                        datasets: [{
+                            label: 'Продажи, грн',
+                            data: [452828, 569133, 477562],
+                            // ОБНОВЛЕНО: Цвета графика
+                            backgroundColor: 'rgba(64, 224, 208, 0.7)',
+                            borderColor: 'rgba(64, 224, 208, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y',
+                        }, {
+                            label: 'Клиенты',
+                            data: [625, 847, 728],
+                            type: 'line',
+                            // ОБНОВЛЕНО: Цвета графика
+                            borderColor: 'rgba(255, 255, 255, 1)',
+                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                            tension: 0.2,
+                            yAxisID: 'y1',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { position: 'left', ticks: { color: '#a0a5b6' }, grid: { color: 'rgba(64, 224, 208, 0.1)' } },
+                            y1: { position: 'right', ticks: { color: '#a0a5b6' }, grid: { drawOnChartArea: false } },
+                            x: { ticks: { color: '#a0a5b6' } }
+                        }
+                    }
+                });
+            },
+
+            updateFinancials() {
+                const avgMarginEl = document.getElementById('average-margin');
+                const reqGrowthEl = document.getElementById('required-growth');
+                const selectAllCheckbox = document.getElementById('select-all-checkbox');
+                if (!avgMarginEl || !reqGrowthEl) return;
                 
-                setTimeout(() => {
-                    wheelContainer.style.display = 'none';
-                    
-                    // Показываем финальное приглашение
-                    invitationDiv.classList.remove('hidden');
-                    invitationDiv.classList.add('fade-in');
-                }, 500);
+                const baseMarginTarget = 170.71;
+                const financialData = [ { promoMargin: 60.25 }, { promoMargin: 109.75 }, { promoMargin: 109.75 }, { promoMargin: 136.00 }, { promoMargin: 53.50 }, { promoMargin: 64.50 }, { promoMargin: 136.00 }, { promoMargin: 109.50 }, { promoMargin: 70.50 }, { promoMargin: 91.50 } ];
 
-            }, 4500); // 4000ms анимация + 500ms запас
-        });
+                const checkedBoxes = document.querySelectorAll('.promo-checkbox:checked');
+                const totalMargin = Array.from(checkedBoxes).reduce((sum, cb) => sum + parseFloat(cb.dataset.promoMargin), 0);
+                
+                selectAllCheckbox.checked = checkedBoxes.length === financialData.length;
+
+                const averageMargin = (checkedBoxes.length > 0) ? totalMargin / checkedBoxes.length : 0;
+                const requiredGrowth = (averageMargin > 0) ? (baseMarginTarget / averageMargin - 1) * 100 : 0;
+
+                avgMarginEl.textContent = `${averageMargin.toFixed(2)} грн.`;
+                reqGrowthEl.textContent = `${requiredGrowth.toFixed(2)}%`;
+
+                reqGrowthEl.classList.toggle('text-red-500', requiredGrowth >= 0);
+                reqGrowthEl.classList.toggle('text-green-400', requiredGrowth < 0);
+            },
+
+            initScrollAnimations() {
+                 const animateCounter = (el) => {
+                     const target = +el.dataset.target;
+                     const duration = 1500;
+                     const stepTime = Math.max(1, Math.abs(Math.floor(duration / target)));
+                     let current = 0;
+                     const increment = Math.ceil(target / (duration / stepTime));
+
+                     const timer = setInterval(() => {
+                         current += increment;
+                         if (current >= target) {
+                             el.innerText = target.toLocaleString('ru-RU');
+                             clearInterval(timer);
+                         } else {
+                             el.innerText = current.toLocaleString('ru-RU');
+                         }
+                     }, stepTime);
+                 };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            const counters = entry.target.querySelectorAll('.counter-value');
+                            counters.forEach(counter => {
+                                if (!counter.classList.contains('animated')) {
+                                    animateCounter(counter);
+                                    counter.classList.add('animated');
+                                }
+                            });
+                        }
+                    });
+                }, { threshold: 0.2 });
+                document.querySelectorAll('.content-block').forEach(block => observer.observe(block));
+            },
+
+            initToTopButton() {
+                const toTopButton = document.getElementById('to-top-button');
+                if (!toTopButton) return;
+                window.addEventListener('scroll', () => {
+                    toTopButton.classList.toggle('visible', window.scrollY > 400);
+                });
+                toTopButton.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+        };
+
+        DashboardApp.init();
     </script>
 
 </body>
 </html>
-�
