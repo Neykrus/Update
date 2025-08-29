@@ -1,44 +1,220 @@
-<!DOCTYPE html>
-<html lang="uk" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Аналітична панель: Leprekon
-    3.0</title>
-    
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Chart.js via CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <style>
-        :root {
+import React, { useState, useEffect, useRef } from 'react';
+import Chart from 'chart.js/auto';
+import { useInView } from 'react-intersection-observer';
+
+// Data for the financial calculator and charts
+const financialData = [
+  { name: 'Chaser Mix Ultra 30ml', promoMargin: 60.25 },
+  { name: 'Chaser Black 30ml', promoMargin: 109.75 },
+  { name: 'Chaser Pods 30ml', promoMargin: 109.75 },
+  { name: 'Chaser Lux 30ml', promoMargin: 136.00 },
+  { name: 'Octobar Black Limit 30ml', promoMargin: 53.50 },
+  { name: 'Octobar NFT 30 ml/50 mg', promoMargin: 64.50 },
+  { name: 'Octobar Prime 30ml', promoMargin: 136.00 },
+  { name: 'Punch 30ml/5mg', promoMargin: 109.50 },
+  { name: 'Mixbar', promoMargin: 70.50 },
+  { name: 'Lucky', promoMargin: 91.50 }
+];
+
+// Helper component for animated counters
+const AnimatedCounter = ({ target, className }) => {
+  const [count, setCount] = useState(0);
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.5,
+  });
+
+  useEffect(() => {
+    if (inView) {
+      let start = 0;
+      const end = Number(target);
+      const duration = 1500;
+      const stepTime = Math.max(1, Math.abs(Math.floor(duration / end)));
+      const increment = Math.ceil(end / (duration / stepTime));
+
+      const timer = setInterval(() => {
+        start += increment;
+        if (start >= end) {
+          setCount(end);
+          clearInterval(timer);
+        } else {
+          setCount(start);
+        }
+      }, stepTime);
+      return () => clearInterval(timer);
+    }
+  }, [inView, target]);
+
+  return (
+    <span ref={ref} className={className}>
+      {count.toLocaleString('uk-UA')}
+    </span>
+  );
+};
+
+// Component for the dashboard's main sections
+const DashboardSection = ({ id, title, children }) => {
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.2,
+  });
+
+  return (
+    <section
+      id={id}
+      ref={ref}
+      className={`content-block p-6 md:p-8 ${inView ? 'is-visible' : ''}`}
+    >
+      <h2 className="text-4xl font-bold mb-8 text-white section-header">
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
+};
+
+// Component for the accordion/details toggle
+const Accordion = ({ buttonText, children }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <>
+      <div
+        className={`details-container ${isOpen ? 'open' : ''}`}
+        style={{ transition: 'max-height 0.9s ease-in-out, margin-top 0.7s ease-in-out, padding-top 0.7s ease-in-out' }}
+      >
+        {children}
+      </div>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="toggle-details-btn w-full mt-8 py-2 rounded-lg font-semibold flex items-center justify-center"
+      >
+        <span className="mr-2">{buttonText}</span>
+        <svg
+          className={`w-6 h-6 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M19 9l-7 7-7-7"
+          ></path>
+        </svg>
+      </button>
+    </>
+  );
+};
+
+// Main App component
+const App = () => {
+  const [selectedItems, setSelectedItems] = useState([
+    { name: 'Chaser Mix Ultra 30ml', promoMargin: 60.25 }
+  ]);
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+    // This is where Chart.js is initialized. It's a common pattern to use a ref for the canvas element.
+    if (chartRef.current) {
+      const ctx = chartRef.current.getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['До акції', 'Під час', 'Після акції'],
+          datasets: [
+            {
+              label: 'Продажі, грн',
+              data: [452828, 569133, 477562],
+              backgroundColor: 'rgba(52, 211, 153, 0.7)',
+              borderColor: 'rgba(52, 211, 153, 1)',
+              borderWidth: 1,
+              yAxisID: 'y',
+            },
+            {
+              label: 'Клієнти',
+              data: [625, 847, 728],
+              type: 'line',
+              borderColor: 'rgba(255, 255, 255, 1)',
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              tension: 0.2,
+              yAxisID: 'y1',
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            y: {
+              position: 'left',
+              ticks: { color: '#a0a5b6' },
+              grid: { color: 'rgba(52, 211, 153, 0.1)' },
+            },
+            y1: {
+              position: 'right',
+              ticks: { color: '#a0a5b6' },
+              grid: { drawOnChartArea: false },
+            },
+            x: {
+              ticks: { color: '#a0a5b6' },
+            },
+          },
+        },
+      });
+    }
+  }, []);
+
+  const handleCheckboxChange = (e, item) => {
+    if (e.target.checked) {
+      setSelectedItems([...selectedItems, item]);
+    } else {
+      setSelectedItems(selectedItems.filter((i) => i.name !== item.name));
+    }
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedItems([...financialData]);
+    } else {
+      setSelectedItems([]);
+    }
+  };
+
+  const totalMargin = selectedItems.reduce((sum, item) => sum + item.promoMargin, 0);
+  const averageMargin = selectedItems.length > 0 ? totalMargin / selectedItems.length : 0;
+  const baseMarginTarget = 170.71;
+  const requiredGrowth = averageMargin > 0 ? (baseMarginTarget / averageMargin - 1) * 100 : 0;
+  const requiredGrowthColor = requiredGrowth >= 0 ? 'text-red-500' : 'text-green-400';
+
+  return (
+    <>
+      <style>
+        {`
+          :root {
             --bg-color: #020414;
-            --primary-color: #40E0D0; /* Бірюзовий */
+            --primary-color: #34D399; /* Зелений */
             --secondary-color: #FFFFFF; /* Білий */
             --text-primary: #f0f2f5;
             --text-secondary: #a0a5b6;
-            --border-color: rgba(64, 224, 208, 0.2);
+            --border-color: rgba(52, 211, 153, 0.2);
             --surface-color: rgba(30, 30, 35, 0.6);
-        }
+          }
 
-        body {
+          body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             background-image: url('https://images.unsplash.com/photo-1535025183041-0991a977e25b?q=80&w=1923&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-        }
+          }
 
-        .content-block {
-            background-color: var(--surface-color); 
+          .content-block {
+            background-color: var(--surface-color);
             border: 1px solid var(--border-color);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -47,54 +223,47 @@
             transform: translateY(30px) scale(0.98);
             transition: opacity 0.6s ease-out, transform 0.6s ease-out, box-shadow 0.3s ease;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
+          }
 
-        .content-block.is-visible {
+          .content-block.is-visible {
             opacity: 1;
             transform: translateY(0) scale(1);
-        }
-        
-        .accent-text-main {
+          }
+          
+          .accent-text-main {
             color: var(--primary-color);
-        }
-        
-        .accent-text-secondary {
+          }
+          
+          .accent-text-secondary {
             color: var(--secondary-color);
-        }
+          }
 
-        .section-header {
+          .section-header {
             border-left: 4px solid var(--primary-color);
             padding-left: 1rem;
-        }
+          }
 
-        .details-container {
+          .details-container {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.9s ease-in-out, margin-top 0.7s ease-in-out, padding-top 0.7s ease-in-out;
-        }
-        .details-container.open {
+          }
+          .details-container.open {
             max-height: 1200px;
             margin-top: 2rem;
             padding-top: 2rem;
             border-top: 1px solid var(--border-color);
-        }
-        .toggle-details-btn {
-            background-color: rgba(64, 224, 208, 0.1);
-            border: 1px solid rgba(64, 224, 208, 0.2);
+          }
+          .toggle-details-btn {
+            background-color: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.2);
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        .toggle-details-btn:hover {
-            background-color: rgba(64, 224, 208, 0.2);
-        }
-        .toggle-details-btn svg {
-            transition: transform 0.5s ease;
-        }
-        .details-container.open + .toggle-details-btn svg {
-            transform: rotate(180deg);
-        }
-        
-        #to-top-button {
+          }
+          .toggle-details-btn:hover {
+            background-color: rgba(52, 211, 153, 0.2);
+          }
+          
+          #to-top-button {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
@@ -112,361 +281,211 @@
             transition: opacity 0.4s ease, transform 0.4s ease;
             z-index: 100;
             box-shadow: 0 0 10px var(--primary-color);
-        }
-        #to-top-button.visible {
+          }
+          #to-top-button.visible {
             opacity: 1;
             transform: scale(1);
-        }
-    </style>
-</head>
-<body class="text-gray-200">
-
-    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-neutral-800 shadow-lg">
-        <div class="container mx-auto flex justify-center items-center p-4">
-            <h1 class="text-xl md:text-2xl font-semibold text-white">Vape Департамент</h1>
+          }
+        `}
+      </style>
+      <header className="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-neutral-800 shadow-lg">
+        <div className="container mx-auto flex justify-center items-center p-4">
+          <h1 className="text-xl md:text-2xl font-semibold text-white">Vape Департамент</h1>
         </div>
-    </header>
-
-    <div class="container mx-auto p-4 sm:p-6 lg:p-8 space-y-16">
-        <header class="text-center pt-12">
-            <h1 class="text-5xl md:text-7xl font-black text-white uppercase tracking-wider">Leprekon</h1>
-            <p class="text-xl text-white mt-4">Стратегія розвитку Vape напрямку
-                Вересень
-            </p>
+      </header>
+      <div className="container mx-auto p-4 sm:p-6 lg:p-8 space-y-16">
+        <header className="text-center pt-12">
+          <h1 className="text-5xl md:text-7xl font-black accent-text-main uppercase tracking-wider">Leprekon</h1>
+          <p className="text-xl text-white mt-4">Стратегія розвитку Vape напрямку Вересень</p>
         </header>
 
-        <main class="space-y-16">
-            
-            <section id="cartridge" class="content-block p-6 md:p-8">
-                <h2 class="text-4xl font-bold mb-8 text-white section-header">Аналіз акції з Картриджами</h2>
-                <div class="grid md:grid-cols-3 gap-8 text-center">
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Середня вартість списання</p>
-                        <p class="text-4xl font-bold text-red-500 mt-2"><span class="counter-value" data-target="79311">0</span> грн</p>
-                    </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Прогноз зростання продажів</p>
-                        <p class="text-4xl font-bold accent-text-main mt-2">+<span class="counter-value" data-target="40">0</span>%</p>
-                    </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Очікуваний приріст кількості покупців</p>
-                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="250">0</span> чол.</p>
-                    </div>
+        <main className="space-y-16">
+          <DashboardSection id="cartridge" title="Аналіз акції з Картриджами">
+            <div className="grid md:grid-cols-3 gap-8 text-center">
+              <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                <p className="text-sm text-gray-400">Середня вартість списання</p>
+                <p className="text-4xl font-bold text-red-500 mt-2">
+                  <AnimatedCounter target={79311} /> грн
+                </p>
+              </div>
+              <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                <p className="text-sm text-gray-400">Прогноз зростання продажів</p>
+                <p className="text-4xl font-bold accent-text-main mt-2">
+                  +<AnimatedCounter target={40} />%
+                </p>
+              </div>
+              <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                <p className="text-sm text-gray-400">Очікуваний приріст кількості покупців</p>
+                <p className="text-4xl font-bold text-white mt-2">
+                  <AnimatedCounter target={250} /> чол.
+                </p>
+              </div>
+            </div>
+            <Accordion buttonText="Детальний аналіз та калькулятор">
+              <div className="grid lg:grid-cols-2 gap-8">
+                <div>
+                  <h4 className="font-bold text-xl mb-4 text-white text-center">Аналіз минулого періоду</h4>
+                  <div className="relative h-64 w-full">
+                    <canvas ref={chartRef}></canvas>
+                  </div>
+                  <ul className="mt-4 text-sm text-gray-400 space-y-1 text-center">
+                    <li>Зростання продажів у піковий тиждень: <b className="text-green-400">+39%</b></li>
+                    <li>Приріст клієнтів: <b className="text-green-400">+25%</b></li>
+                  </ul>
                 </div>
-                <div class="details-container">
-                    <div class="grid lg:grid-cols-2 gap-8">
-                        <div>
-                            <h4 class="font-bold text-xl mb-4 text-white text-center">Аналіз минулого періоду</h4>
-                            <div class="relative h-64 w-full">
-                                <canvas id="cartridgePastAnalysisChart"></canvas>
-                            </div>
-                            <ul class="mt-4 text-sm text-gray-400 space-y-1 text-center">
-                                <li>Зростання продажів у піковий тиждень: <b class="text-green-400">+39%</b></li>
-                                <li>Приріст клієнтів: <b class="text-green-400">+25%</b></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-xl mb-4 text-white text-center">Інтерактивний калькулятор</h4>
-                            <div class="overflow-x-auto max-h-72">
-                                <table class="w-full text-sm text-left text-gray-400">
-                                    <thead class="text-xs text-gray-300 uppercase sticky top-0 z-10 bg-neutral-950">
-                                        <tr>
-                                            <th class="px-4 py-3"><input type="checkbox" id="select-all-checkbox" class="form-checkbox"></th>
-                                            <th class="px-6 py-3">Промо Товар</th>
-                                            <th class="px-6 py-3 text-right">Промо-маржа</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="financial-table-body"></tbody>
-                                </table>
-                            </div>
-                            <div class="mt-4 pt-4 border-t border-[var(--border-color)] grid grid-cols-2 gap-4 text-center">
-                                <div>
-                                    <p class="text-gray-400 text-xs">Середня маржа набору</p>
-                                    <p id="average-margin" class="text-2xl font-bold text-white">0.00 грн.</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-400 text-xs">Необхідне зростання продажів</p>
-                                    <p id="required-growth" class="text-2xl font-bold text-red-500">0.00%</p>
-                                </div>
-                            </div>
-                        </div>
+                <div>
+                  <h4 className="font-bold text-xl mb-4 text-white text-center">Інтерактивний калькулятор</h4>
+                  <div className="overflow-x-auto max-h-72">
+                    <table className="w-full text-sm text-left text-gray-400">
+                      <thead className="text-xs text-gray-300 uppercase sticky top-0 z-10 bg-neutral-950">
+                        <tr>
+                          <th className="px-4 py-3"><input type="checkbox" onChange={handleSelectAll} className="form-checkbox" checked={selectedItems.length === financialData.length && financialData.length > 0} /></th>
+                          <th className="px-6 py-3">Промо Товар</th>
+                          <th className="px-6 py-3 text-right">Промо-маржа</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {financialData.map((item, index) => (
+                          <tr key={index} className="border-b border-neutral-800 hover:bg-neutral-800/50 transition-colors text-xs">
+                            <td className="px-4 py-2">
+                              <input
+                                type="checkbox"
+                                onChange={(e) => handleCheckboxChange(e, item)}
+                                className="form-checkbox promo-checkbox"
+                                checked={selectedItems.some(i => i.name === item.name)}
+                              />
+                            </td>
+                            <th scope="row" className="px-6 py-2 font-medium text-white whitespace-nowrap">{item.name}</th>
+                            <td className="px-6 py-2 font-bold accent-text-main text-right">{item.promoMargin.toFixed(2)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-[var(--border-color)] grid grid-cols-2 gap-4 text-center">
+                    <div>
+                      <p className="text-gray-400 text-xs">Середня маржа набору</p>
+                      <p className="text-2xl font-bold text-white">
+                        {averageMargin.toFixed(2)} грн.
+                      </p>
                     </div>
+                    <div>
+                      <p className="text-gray-400 text-xs">Необхідне зростання продажів</p>
+                      <p className={`text-2xl font-bold ${requiredGrowthColor}`}>
+                        {requiredGrowth.toFixed(2)}%
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <button class="toggle-details-btn w-full mt-8 py-2 rounded-lg font-semibold flex items-center justify-center">
-                    <span class="mr-2">Детальний аналіз та калькулятор</span>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
-            </section>
+              </div>
+            </Accordion>
+          </DashboardSection>
 
-            <section id="glovo" class="content-block p-6 md:p-8">
-                <h2 class="text-4xl font-bold mb-8 text-white section-header">Промо старт Glovo + InBottle</h2>
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Прогноз замовлень за 2 тижні</p>
-                        <p class="text-4xl font-bold text-white mt-2 counter-value" data-target="100">0</p>
-                    </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Середній чек</p>
-                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="550">0</span> грн</p>
-                    </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Вартість промо (1 тиж)</p>
-                        <p class="text-2xl font-bold text-green-400 mt-2">0 грн</p>
-                        <p class="text-xs text-gray-500">(за рахунок постачальника)</p>
-                    </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Охоплення нової аудиторії</p>
-                        <p class="text-4xl font-bold accent-text-main mt-2">+<span class="counter-value" data-target="35">0</span>%</p>
-                    </div>
+          <DashboardSection id="glovo" title="Промо старт Glovo + InBottle">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+              <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                <p className="text-sm text-gray-400">Прогноз замовлень за 2 тижні</p>
+                <p className="text-4xl font-bold text-white mt-2">
+                  <AnimatedCounter target={100} />
+                </p>
+              </div>
+              <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                <p className="text-sm text-gray-400">Середній чек</p>
+                <p className="text-4xl font-bold text-white mt-2">
+                  <AnimatedCounter target={550} /> грн
+                </p>
+              </div>
+              <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                <p className="text-sm text-gray-400">Вартість промо (1 тиж)</p>
+                <p className="text-2xl font-bold text-green-400 mt-2">0 грн</p>
+                <p className="text-xs text-gray-500">(за рахунок постачальника)</p>
+              </div>
+              <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                <p className="text-sm text-gray-400">Охоплення нової аудиторії</p>
+                <p className="text-4xl font-bold accent-text-main mt-2">
+                  +<AnimatedCounter target={35} />%
+                </p>
+              </div>
+            </div>
+            <Accordion buttonText="Планові показники">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h4 className="font-bold text-xl mb-2 text-white">Цілі та KPI</h4>
+                  <ul className="list-disc list-inside text-gray-400 space-y-1">
+                    <li>Залучити <b>100+</b> нових клієнтів за перший тиждень.</li>
+                    <li>Досягти <b>100+</b> замовлень до кінця місяця (за 2 тижні).</li>
+                    <li>Утримати середній чек доставки на позначці <b>500+</b> грн.</li>
+                    <li>Дарувати рідину `InBottle` до кожного замовлення від <b>500 грн</b>.</li>
+                  </ul>
                 </div>
-                <div class="details-container">
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Цілі та KPI</h4>
-                            <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Залучити <b>100+</b> нових клієнтів за перший тиждень.</li>
-                                <li>Досягти <b>100+</b> замовлень до кінця місяця (за 2 тижні).</li>
-                                <li>Утримати середній чек доставки на позначці <b>500+</b> грн.</li>
-                                <li>Дарувати рідину `InBottle` до кожного замовлення від <b>500 грн</b>.</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Фінансовий прогноз</h4>
-                            <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Прогнозований оборот: <b>~82 500 грн/тиждень.</b></li>
-                                <li>Витрати на подарунки: <b>0 грн</b> (за рахунок постачальника).</li>
-                            </ul>
-                        </div>
-                    </div>
+                <div>
+                  <h4 className="font-bold text-xl mb-2 text-white">Фінансовий прогноз</h4>
+                  <ul className="list-disc list-inside text-gray-400 space-y-1">
+                    <li>Прогнозований оборот: <b>~82 500 грн/тиждень.</b></li>
+                    <li>Витрати на подарунки: <b>0 грн</b> (за рахунок постачальника).</li>
+                    <li>PR-цінність: <b>нематеріальний актив.</b></li>
+                  </ul>
                 </div>
-                <button class="toggle-details-btn w-full mt-8 py-2 rounded-lg font-semibold flex items-center justify-center">
-                    <span class="mr-2">Планові показники</span>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
-            </section>
+              </div>
+            </Accordion>
+          </DashboardSection>
 
-            <section id="powerkit" class="content-block p-6 md:p-8">
-                <h2 class="text-4xl font-bold mb-8 text-white section-header">Ініціатива "PowerKit"</h2>
-                 <div class="grid md:grid-cols-3 gap-8 text-center">
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Мета зі збору пристроїв</p>
-                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="500">0</span> шт.</p>
-                    </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Середній бонус клієнту</p>
-                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="100">0</span> грн</p>
-                    </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Прогноз зростання LTV</p>
-                        <p class="text-4xl font-bold accent-text-main mt-2">+<span class="counter-value" data-target="15">0</span>%</p>
-                    </div>
+          <DashboardSection id="powerkit" title="Ініціатива 'PowerKit'">
+            <div className="grid md:grid-cols-3 gap-8 text-center">
+              <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                <p className="text-sm text-gray-400">Мета зі збору пристроїв</p>
+                <p className="text-4xl font-bold text-white mt-2">
+                  <AnimatedCounter target={500} /> шт.
+                </p>
+              </div>
+              <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                <p className="text-sm text-gray-400">Середній бонус клієнту</p>
+                <p className="text-4xl font-bold text-white mt-2">
+                  <AnimatedCounter target={100} /> грн
+                </p>
+              </div>
+              <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
+                <p className="text-sm text-gray-400">Прогноз зростання LTV</p>
+                <p className="text-4xl font-bold accent-text-main mt-2">
+                  +<AnimatedCounter target={15} />%
+                </p>
+              </div>
+            </div>
+            <Accordion buttonText="Детальний аналіз">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h4 className="font-bold text-xl mb-2 text-white">Цілі та KPI</h4>
+                  <ul className="list-disc list-inside text-gray-400 space-y-1">
+                    <li>Зібрати <b>500+</b> пристроїв за місяць.</li>
+                    <li>Збільшити retention rate на <b>5%</b> серед учасників.</li>
+                    <li>Отримати <b>10+</b> згадок у локальних ЗМІ/блогах.</li>
+                  </ul>
                 </div>
-                <div class="details-container">
-                     <div class="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Цілі та KPI</h4>
-                            <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Зібрати <b>500+</b> пристроїв за місяць.</li>
-                                <li>Збільшити retention rate на <b>5%</b> серед учасників.</li>
-                                 <li>Отримати <b>10+</b> згадок у локальних ЗМІ/блогах.</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Фінансовий прогноз</h4>
-                            <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Загальні витрати на бонуси: <b>~50 000 грн.</b></li>
-                                <li>Додатковий оборот від учасників: <b>~150 000 грн.</b></li>
-                                <li>PR-цінність: <b>нематеріальний актив.</b></li>
-                            </ul>
-                        </div>
-                    </div>
+                <div>
+                  <h4 className="font-bold text-xl mb-2 text-white">Фінансовий прогноз</h4>
+                  <ul className="list-disc list-inside text-gray-400 space-y-1">
+                    <li>Загальні витрати на бонуси: <b>~50 000 грн.</b></li>
+                    <li>Додатковий оборот від учасників: <b>~150 000 грн.</b></li>
+                    <li>PR-цінність: <b>нематеріальний актив.</b></li>
+                  </ul>
                 </div>
-                 <button class="toggle-details-btn w-full mt-8 py-2 rounded-lg font-semibold flex items-center justify-center">
-                    <span class="mr-2">Детальний аналіз</span>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
-            </section>
+              </div>
+            </Accordion>
+          </DashboardSection>
         </main>
-    </div>
-    
-    <button id="to-top-button" aria-label="Повернутися нагору">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7-7" /></svg>
-    </button>
+      </div>
+      <button
+        id="to-top-button"
+        aria-label="Повернутися нагору"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-8 right-8 bg-[var(--primary-color)] text-[#020414] w-14 h-14 rounded-full flex items-center justify-center cursor-pointer opacity-0 scale-50 transition-all duration-400 z-50"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7-7" />
+        </svg>
+      </button>
+    </>
+  );
+};
 
-    <script>
-        const DashboardApp = {
-            init() {
-                document.addEventListener('DOMContentLoaded', () => {
-                    this.initScrollAnimations();
-                    this.initToTopButton();
-                    this.initAccordions();
-                    this.initFinancialCalculator();
-                    this.initCartridgeChart(); 
-                });
-            },
-            
-            initAccordions() {
-                const buttons = document.querySelectorAll('.toggle-details-btn');
-                buttons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        const detailsContainer = button.previousElementSibling;
-                        detailsContainer.classList.toggle('open');
-                    });
-                });
-            },
-
-            initFinancialCalculator() {
-                const tableBody = document.getElementById('financial-table-body');
-                const selectAllCheckbox = document.getElementById('select-all-checkbox');
-                if (!tableBody || !selectAllCheckbox) return;
-
-                const financialData = [
-                    { name: 'Chaser Mix Ultra 30ml', promoMargin: 60.25, checked: true },
-                    { name: 'Chaser Black 30ml', promoMargin: 109.75, checked: false },
-                    { name: 'Chaser Pods 30ml', promoMargin: 109.75, checked: false },
-                    { name: 'Chaser Lux 30ml', promoMargin: 136.00, checked: false },
-                    { name: 'Octobar Black Limit 30ml', promoMargin: 53.50, checked: false },
-                    { name: 'Octobar NFT 30 ml/50 mg', promoMargin: 64.50, checked: false },
-                    { name: 'Octobar Prime 30ml', promoMargin: 136.00, checked: false },
-                    { name: 'Punch 30ml/5mg', promoMargin: 109.50, checked: false },
-                    { name: 'Mixbar', promoMargin: 70.50, checked: false },
-                    { name: 'Lucky', promoMargin: 91.50, checked: false }
-                ];
-
-                tableBody.innerHTML = '';
-                financialData.forEach((item, index) => {
-                    const row = document.createElement('tr');
-                    row.className = 'border-b border-neutral-800 hover:bg-neutral-800/50 transition-colors text-xs';
-                    row.innerHTML = `
-                        <td class="px-4 py-2"><input type="checkbox" id="promo-${index}" class="form-checkbox promo-checkbox" data-promo-margin="${item.promoMargin}" ${item.checked ? 'checked' : ''}></td>
-                        <th scope="row" class="px-6 py-2 font-medium text-white whitespace-nowrap">${item.name}</th>
-                        <td class="px-6 py-2 font-bold accent-text-main text-right">${item.promoMargin.toFixed(2)}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-
-                const updateHandler = this.updateFinancials.bind(this);
-                document.querySelectorAll('.promo-checkbox').forEach(cb => cb.addEventListener('change', updateHandler));
-                selectAllCheckbox.addEventListener('change', (e) => {
-                    document.querySelectorAll('.promo-checkbox').forEach(cb => cb.checked = e.target.checked);
-                    updateHandler();
-                });
-
-                updateHandler();
-            },
-
-            initCartridgeChart() {
-                const ctx = document.getElementById('cartridgePastAnalysisChart')?.getContext('2d');
-                if (!ctx) return;
-
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['До акції', 'Під час', 'Після акції'],
-                        datasets: [{
-                            label: 'Продажі, грн',
-                            data: [452828, 569133, 477562],
-                            backgroundColor: 'rgba(64, 224, 208, 0.7)',
-                            borderColor: 'rgba(64, 224, 208, 1)',
-                            borderWidth: 1,
-                            yAxisID: 'y',
-                        }, {
-                            label: 'Клієнти',
-                            data: [625, 847, 728],
-                            type: 'line',
-                            borderColor: 'rgba(255, 255, 255, 1)',
-                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                            tension: 0.2,
-                            yAxisID: 'y1',
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { position: 'left', ticks: { color: '#a0a5b6' }, grid: { color: 'rgba(64, 224, 208, 0.1)' } },
-                            y1: { position: 'right', ticks: { color: '#a0a5b6' }, grid: { drawOnChartArea: false } },
-                            x: { ticks: { color: '#a0a5b6' } }
-                        }
-                    }
-                });
-            },
-
-            updateFinancials() {
-                const avgMarginEl = document.getElementById('average-margin');
-                const reqGrowthEl = document.getElementById('required-growth');
-                const selectAllCheckbox = document.getElementById('select-all-checkbox');
-                if (!avgMarginEl || !reqGrowthEl) return;
-                
-                const baseMarginTarget = 170.71;
-                const financialData = [ { promoMargin: 60.25 }, { promoMargin: 109.75 }, { promoMargin: 109.75 }, { promoMargin: 136.00 }, { promoMargin: 53.50 }, { promoMargin: 64.50 }, { promoMargin: 136.00 }, { promoMargin: 109.50 }, { promoMargin: 70.50 }, { promoMargin: 91.50 } ];
-
-                const checkedBoxes = document.querySelectorAll('.promo-checkbox:checked');
-                const totalMargin = Array.from(checkedBoxes).reduce((sum, cb) => sum + parseFloat(cb.dataset.promoMargin), 0);
-                
-                selectAllCheckbox.checked = checkedBoxes.length === financialData.length;
-
-                const averageMargin = (checkedBoxes.length > 0) ? totalMargin / checkedBoxes.length : 0;
-                const requiredGrowth = (averageMargin > 0) ? (baseMarginTarget / averageMargin - 1) * 100 : 0;
-
-                avgMarginEl.textContent = `${averageMargin.toFixed(2)} грн.`;
-                reqGrowthEl.textContent = `${requiredGrowth.toFixed(2)}%`;
-
-                reqGrowthEl.classList.toggle('text-red-500', requiredGrowth >= 0);
-                reqGrowthEl.classList.toggle('text-green-400', requiredGrowth < 0);
-            },
-
-            initScrollAnimations() {
-                 const animateCounter = (el) => {
-                     const target = +el.dataset.target;
-                     const duration = 1500;
-                     const stepTime = Math.max(1, Math.abs(Math.floor(duration / target)));
-                     let current = 0;
-                     const increment = Math.ceil(target / (duration / stepTime));
-
-                     const timer = setInterval(() => {
-                         current += increment;
-                         if (current >= target) {
-                             el.innerText = target.toLocaleString('uk-UA');
-                             clearInterval(timer);
-                         } else {
-                             el.innerText = current.toLocaleString('uk-UA');
-                         }
-                     }, stepTime);
-                 };
-
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('is-visible');
-                            const counters = entry.target.querySelectorAll('.counter-value');
-                            counters.forEach(counter => {
-                                if (!counter.classList.contains('animated')) {
-                                    animateCounter(counter);
-                                    counter.classList.add('animated');
-                                }
-                            });
-                        }
-                    });
-                }, { threshold: 0.2 });
-                document.querySelectorAll('.content-block').forEach(block => observer.observe(block));
-            },
-
-            initToTopButton() {
-                const toTopButton = document.getElementById('to-top-button');
-                if (!toTopButton) return;
-                window.addEventListener('scroll', () => {
-                    toTopButton.classList.toggle('visible', window.scrollY > 400);
-                });
-                toTopButton.addEventListener('click', () => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
-            }
-        };
-
-        DashboardApp.init();
-    </script>
-
-</body>
-</html>
+export default App;
