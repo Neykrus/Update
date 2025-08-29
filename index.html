@@ -34,12 +34,11 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            min-height: 100vh; /* Ensures the body covers the full viewport height */
-            display: flex; /* Enables flexbox layout */
-            flex-direction: column; /* Stacks children vertically */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
-        /* Flexbox for the main content to grow and push the footer down */
         .flex-grow-content {
             flex-grow: 1;
         }
@@ -141,7 +140,6 @@
         </header>
 
         <main class="space-y-16">
-            
             <section id="cartridge" class="content-block p-6 md:p-8">
                 <h2 class="text-4xl font-bold mb-8 text-white section-header">Аналіз акції з Картриджами</h2>
                 <div class="grid md:grid-cols-3 gap-8 text-center">
@@ -159,9 +157,16 @@
                     </div>
                 </div>
                 <div class="details-container">
-                    <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="grid lg:grid-cols-2 gap-8 mb-8">
                         <div>
-                            <h4 class="font-bold text-xl mb-4 text-white text-center">Аналіз минулого періоду</h4>
+                            <h4 class="font-bold text-xl mb-4 text-white">Механіка акції</h4>
+                            <ul class="list-disc list-inside text-gray-400 space-y-1">
+                                <li>Даруємо картридж до кожної рідини, що бере участь у промо-акції.</li>
+                                <li>Акція діє лише для магазинів Leprekon.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-xl mb-4 text-white">Аналіз минулого періоду</h4>
                             <div class="relative h-64 w-full">
                                 <canvas id="cartridgePastAnalysisChart"></canvas>
                             </div>
@@ -170,6 +175,8 @@
                                 <li>Приріст клієнтів: <b class="text-green-400">+25%</b></li>
                             </ul>
                         </div>
+                    </div>
+                    <div class="grid lg:grid-cols-2 gap-8">
                         <div>
                             <h4 class="font-bold text-xl mb-4 text-white text-center">Інтерактивний калькулятор</h4>
                             <div class="overflow-x-auto max-h-72">
@@ -202,7 +209,7 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
             </section>
-
+            
             <section id="glovo" class="content-block p-6 md:p-8">
                 <h2 class="text-4xl font-bold mb-8 text-white section-header">Промо старт Glovo + InBottle</h2>
                 <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
@@ -225,7 +232,14 @@
                     </div>
                 </div>
                 <div class="details-container">
-                    <div class="grid md:grid-cols-2 gap-8">
+                    <div class="grid md:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h4 class="font-bold text-xl mb-2 text-white">Механіка акції</h4>
+                            <ul class="list-disc list-inside text-gray-400 space-y-1">
+                                <li>Клієнт Glovo отримує рідину InBottle у подарунок до кожного замовлення на суму від <b>500 грн</b>.</li>
+                                <li>Акція спрямована на залучення нових клієнтів та збільшення середнього чека доставки.</li>
+                            </ul>
+                        </div>
                         <div>
                             <h4 class="font-bold text-xl mb-2 text-white">Цілі та KPI</h4>
                             <ul class="list-disc list-inside text-gray-400 space-y-1">
@@ -235,6 +249,8 @@
                                 <li>Дарувати рідину `InBottle` до кожного замовлення від <b>500 грн</b>.</li>
                             </ul>
                         </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-8">
                         <div>
                             <h4 class="font-bold text-xl mb-2 text-white">Фінансовий прогноз</h4>
                             <ul class="list-disc list-inside text-gray-400 space-y-1">
@@ -250,7 +266,7 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
             </section>
-
+            
             <section id="powerkit" class="content-block p-6 md:p-8">
                 <h2 class="text-4xl font-bold mb-8 text-white section-header">Ініціатива "PowerKit"</h2>
                 <div class="grid md:grid-cols-3 gap-8 text-center">
@@ -268,7 +284,15 @@
                     </div>
                 </div>
                 <div class="details-container">
-                    <div class="grid md:grid-cols-2 gap-8">
+                    <div class="grid md:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h4 class="font-bold text-xl mb-2 text-white">Механіка ініціативи</h4>
+                            <ul class="list-disc list-inside text-gray-400 space-y-1">
+                                <li>Приймаємо відпрацьовані електронні сигарети.</li>
+                                <li>Видаємо спеціальні брендовані коробки та наклейки для кожного пристрою.</li>
+                                <li>Надаємо знижку на наступну покупку (бонуси) за кожен зданий пристрій.</li>
+                            </ul>
+                        </div>
                         <div>
                             <h4 class="font-bold text-xl mb-2 text-white">Цілі та KPI</h4>
                             <ul class="list-disc list-inside text-gray-400 space-y-1">
@@ -277,6 +301,8 @@
                                 <li>Отримати <b>10+</b> згадок у локальних ЗМІ/блогах.</li>
                             </ul>
                         </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-8">
                         <div>
                             <h4 class="font-bold text-xl mb-2 text-white">Фінансовий прогноз</h4>
                             <ul class="list-disc list-inside text-gray-400 space-y-1">
