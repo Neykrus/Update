@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Аналітична панель: Leprekon 3.0</title>
+    <title>Аналітична панель акції</title>
     
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,19 +18,19 @@
     
     <style>
         :root {
-            --bg-color: #020414;
-            --primary-color: #34D399; /* Зелений */
-            --secondary-color: #FFFFFF; /* Білий */
-            --text-primary: #f0f2f5;
-            --text-secondary: #a0a5b6;
-            --border-color: rgba(52, 211, 153, 0.2);
-            --surface-color: rgba(30, 30, 35, 0.6);
+            --bg-color: #f7fafc; /* Light gray */
+            --primary-color: #3b82f6; /* Blue */
+            --secondary-color: #60a5fa; /* Lighter blue */
+            --text-primary: #1f2937; /* Dark gray */
+            --text-secondary: #6b7280; /* Gray */
+            --border-color: rgba(59, 130, 246, 0.2);
+            --surface-color: #ffffff; /* White */
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
-            background-image: url('https://images.unsplash.com/photo-1535025183041-0991a977e25b?q=80&w=1923&auto=format&fit=crop');
+            background-image: url('https://images.unsplash.com/photo-1542831371-32216584c688?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -46,13 +46,11 @@
         .content-block {
             background-color: var(--surface-color);
             border: 1px solid var(--border-color);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border-radius: 1.5rem;
             opacity: 0;
             transform: translateY(30px) scale(0.98);
             transition: opacity 0.6s ease-out, transform 0.6s ease-out, box-shadow 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
         }
 
         .content-block.is-visible {
@@ -74,30 +72,8 @@
         }
 
         .details-container {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.9s ease-in-out, margin-top 0.7s ease-in-out, padding-top 0.7s ease-in-out;
-        }
-        .details-container.open {
-            max-height: 1200px;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border-color);
-        }
-        .toggle-details-btn {
-            background-color: rgba(52, 211, 153, 0.1);
-            border: 1px solid rgba(52, 211, 153, 0.2);
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        .toggle-details-btn:hover {
-            background-color: rgba(52, 211, 153, 0.2);
-        }
-        .toggle-details-btn svg {
-            transition: transform 0.5s ease;
-        }
-        .details-container.open + .toggle-details-btn svg {
-            transform: rotate(180deg);
+            max-height: 2000px;
+            overflow: visible;
         }
         
         #to-top-button {
@@ -105,7 +81,7 @@
             bottom: 2rem;
             right: 2rem;
             background-color: var(--primary-color);
-            color: #020414;
+            color: #ffffff;
             width: 3.5rem;
             height: 3.5rem;
             border-radius: 50%;
@@ -117,7 +93,7 @@
             transform: scale(0.5);
             transition: opacity 0.4s ease, transform 0.4s ease;
             z-index: 100;
-            box-shadow: 0 0 10px var(--primary-color);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
         }
         #to-top-button.visible {
             opacity: 1;
@@ -125,198 +101,133 @@
         }
     </style>
 </head>
-<body class="text-gray-200">
+<body class="text-gray-800">
 
-    <header class="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-neutral-800 shadow-lg">
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-lg">
         <div class="container mx-auto flex justify-center items-center p-4">
-            <h1 class="text-xl md:text-2xl font-semibold text-white">Vape</h1>
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Vape Акції</h1>
         </div>
     </header>
 
     <div class="container mx-auto p-4 sm:p-6 lg:p-8 space-y-16 flex-grow-content">
         <header class="text-center pt-12">
-            <h1 class="text-5xl md:text-7xl font-black accent-text-main uppercase tracking-wider">Leprekon</h1>
-            <p class="text-xl text-white mt-4">Стратегія розвитку Vape напрямку Вересень</p>
+            <h1 class="text-5xl md:text-7xl font-black text-blue-500 uppercase tracking-wider">Презентація акції</h1>
+            <p class="text-xl text-gray-700 mt-4">Аналітика та калькулятор маржинальності</p>
         </header>
 
         <main class="space-y-16">
-            <section id="cartridge" class="content-block p-6 md:p-8">
-                <h2 class="text-4xl font-bold mb-8 text-white section-header">Аналіз акції з Картриджами</h2>
-                <div class="grid md:grid-cols-3 gap-8 text-center">
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Середня вартість списання</p>
-                        <p class="text-4xl font-bold text-red-500 mt-2"><span class="counter-value" data-target="79311">0</span> грн</p>
-                    </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Прогноз зростання продажів</p>
-                        <p class="text-4xl font-bold accent-text-main mt-2">+<span class="counter-value" data-target="40">0</span>%</p>
-                    </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Очікуваний приріст кількості покупців</p>
-                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="250">0</span> чол.</p>
-                    </div>
+            <section id="promo-analysis" class="content-block p-6 md:p-8">
+                <h2 class="text-4xl font-bold mb-8 text-gray-800 section-header">Ключові показники акції</h2>
+                <div class="grid md:grid-cols-3 gap-8 text-center" id="analytics-data">
+                    <!-- Cards will be populated by JavaScript -->
                 </div>
                 <div class="details-container">
-                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-                        <div class="lg:col-span-1">
-                            <h4 class="font-bold text-xl mb-4 text-white">Механіка акції</h4>
-                            <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Даруємо картридж до кожної рідини, що бере участь у промо-акції.</li>
-                                <li>Акція діє лише для магазинів Leprekon.</li>
-                            </ul>
-                        </div>
-                        <div class="lg:col-span-2">
-                            <h4 class="font-bold text-xl mb-4 text-white">Аналіз минулого періоду</h4>
-                            <div class="relative h-64 w-full">
-                                <canvas id="cartridgePastAnalysisChart"></canvas>
+                    <div class="space-y-12">
+                         <div class="grid md:grid-cols-2 gap-8 mb-8">
+                            <div class="relative h-64 w-full bg-gray-50 rounded-lg p-4 shadow-inner">
+                                <h4 class="font-bold text-xl mb-4 text-gray-800 text-center">Графік продажів по тижнях</h4>
+                                <canvas id="salesChart"></canvas>
                             </div>
-                            <ul class="mt-4 text-sm text-gray-400 space-y-1 text-center">
-                                <li>Зростання продажів у піковий тиждень: <b class="text-green-400">+39%</b></li>
-                                <li>Приріст клієнтів: <b class="text-green-400">+25%</b></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="grid md:grid-cols-1 gap-8">
-                        <div>
-                            <h4 class="font-bold text-xl mb-4 text-white text-center">Інтерактивний калькулятор</h4>
-                            <div class="overflow-x-auto max-h-72">
-                                <table class="w-full text-sm text-left text-gray-400">
-                                    <thead class="text-xs text-gray-300 uppercase sticky top-0 z-10 bg-neutral-950">
-                                        <tr>
-                                            <th class="px-4 py-3"><input type="checkbox" id="select-all-checkbox" class="form-checkbox"></th>
-                                            <th class="px-6 py-3">Промо Товар</th>
-                                            <th class="px-6 py-3 text-right">Промо-маржа</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="financial-table-body"></tbody>
-                                </table>
+                            <div class="relative h-64 w-full bg-gray-50 rounded-lg p-4 shadow-inner">
+                                <h4 class="font-bold text-xl mb-4 text-gray-800 text-center">Маржа та чиста маржа</h4>
+                                <canvas id="marginChart"></canvas>
                             </div>
-                            <div class="mt-4 pt-4 border-t border-[var(--border-color)] grid grid-cols-2 gap-4 text-center">
-                                <div>
-                                    <p class="text-gray-400 text-xs">Середня маржа набору</p>
-                                    <p id="average-margin" class="text-2xl font-bold text-white">0.00 грн.</p>
+                         </div>
+                         <div class="grid md:grid-cols-2 gap-8 mb-8">
+                            <div class="relative h-64 w-full bg-gray-50 rounded-lg p-4 shadow-inner">
+                                <h4 class="font-bold text-xl mb-4 text-gray-800 text-center">Розподіл маржі</h4>
+                                <canvas id="marginPieChart"></canvas>
+                            </div>
+                            <div class="relative h-64 w-full bg-gray-50 rounded-lg p-4 shadow-inner">
+                                <h4 class="font-bold text-xl mb-4 text-gray-800 text-center">Продажі та чиста маржа</h4>
+                                <canvas id="salesCleanMarginChart"></canvas>
+                            </div>
+                         </div>
+                         <div class="grid md:grid-cols-2 gap-8 mb-8">
+                            <div class="relative h-64 w-full bg-gray-50 rounded-lg p-4 shadow-inner">
+                                <h4 class="font-bold text-xl mb-4 text-gray-800 text-center">Аналіз ефективності акції</h4>
+                                <canvas id="efficiencyChart"></canvas>
+                            </div>
+                            <div class="relative h-64 w-full bg-gray-50 rounded-lg p-4 shadow-inner">
+                                <h4 class="font-bold text-xl mb-4 text-gray-800 text-center">Кількість клієнтів</h4>
+                                <canvas id="clientGrowthChart"></canvas>
+                            </div>
+                         </div>
+                         <div class="grid md:grid-cols-2 gap-8 mb-8">
+                            <div class="relative h-64 w-full bg-gray-50 rounded-lg p-4 shadow-inner">
+                                <h4 class="font-bold text-xl mb-4 text-gray-800 text-center">Доля клієнтів за участю у бонусній програмі</h4>
+                                <canvas id="customerSegmentChart"></canvas>
+                            </div>
+                            <div class="md:col-span-1">
+                                <h4 class="font-bold text-xl mb-4 text-gray-800 text-center">Інтерактивний калькулятор</h4>
+                                <div class="overflow-x-auto max-h-72 bg-gray-50 rounded-lg shadow-inner">
+                                    <table class="w-full text-sm text-left text-gray-600">
+                                        <thead class="text-xs text-gray-500 uppercase sticky top-0 z-10 bg-white">
+                                            <tr>
+                                                <th class="px-4 py-3"><input type="checkbox" id="select-all-checkbox" class="form-checkbox"></th>
+                                                <th class="px-6 py-3">Промо Товар</th>
+                                                <th class="px-6 py-3 text-right">Маржа</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="financial-table-body"></tbody>
+                                    </table>
                                 </div>
-                                <div>
-                                    <p class="text-gray-400 text-xs">Необхідне зростання продажів</p>
-                                    <p id="required-growth" class="text-2xl font-bold text-red-500">0.00%</p>
+                                <div class="mt-4 pt-4 border-t border-gray-200 grid grid-cols-2 gap-4 text-center">
+                                    <div>
+                                        <p class="text-gray-600 text-xs">Середня маржа набору</p>
+                                        <p id="average-margin" class="text-2xl font-bold text-gray-800">0.00 грн.</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-600 text-xs">Необхідний рівень росту</p>
+                                        <p id="required-growth" class="text-2xl font-bold text-red-500">0.00%</p>
+                                    </div>
                                 </div>
+                            </div>
+                            <div class="relative h-64 w-full bg-gray-50 rounded-lg p-4 shadow-inner">
+                                <h4 class="font-bold text-xl mb-4 text-gray-800 text-center">Розподіл маржі обраних товарів</h4>
+                                <canvas id="promoMarginPieChart"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
-                <button class="toggle-details-btn w-full mt-8 py-2 rounded-lg font-semibold flex items-center justify-center">
-                    <span class="mr-2">Детальний аналіз та калькулятор</span>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
             </section>
-            
+
             <section id="glovo" class="content-block p-6 md:p-8">
-                <h2 class="text-4xl font-bold mb-8 text-white section-header">Промо старт Glovo + InBottle</h2>
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Прогноз замовлень за 2 тижні</p>
-                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="100">0</span></p>
+                <h2 class="text-4xl font-bold mb-8 text-gray-800 section-header">Промо старт Glovo - Картридж у подарунок</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
+                    <div class="bg-blue-50 p-6 rounded-2xl shadow-md border border-blue-100">
+                        <p class="text-sm text-gray-500">Прогноз замовлень за 2 тижні</p>
+                        <p class="text-4xl font-bold text-blue-500 mt-2"><span class="counter-value" data-target="100" data-unit="">0</span></p>
                     </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Середній чек</p>
-                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="550">0</span> грн</p>
+                    <div class="bg-blue-50 p-6 rounded-2xl shadow-md border border-blue-100">
+                        <p class="text-sm text-gray-500">Середній чек</p>
+                        <p class="text-4xl font-bold text-blue-500 mt-2"><span class="counter-value" data-target="350" data-unit=" грн">0</span></p>
                     </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Вартість промо (1 тиж)</p>
-                        <p class="text-2xl font-bold text-green-400 mt-2">0 грн</p>
-                        <p class="text-xs text-gray-500">(за рахунок постачальника)</p>
-                    </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Охоплення нової аудиторії</p>
-                        <p class="text-4xl font-bold accent-text-main mt-2">+<span class="counter-value" data-target="35">0</span>%</p>
+                    <div class="bg-blue-50 p-6 rounded-2xl shadow-md border border-blue-100">
+                        <p class="text-sm text-gray-500">Охоплення нової аудиторії</p>
+                        <p class="text-4xl font-bold text-blue-500 mt-2"><span class="counter-value" data-target="10" data-unit="%">0</span></p>
+                        <p class="text-xs text-gray-400">Цільовий показник 10% від всієї клієнтської бази Запоріжжя у перший місяць після акції</p>
                     </div>
                 </div>
-                <div class="details-container">
+                <div class="details-container mt-8 pt-8 border-t border-gray-200">
                     <div class="grid md:grid-cols-2 gap-8 mb-8">
                         <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Механіка акції</h4>
-                            <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Клієнт Glovo отримує рідину InBottle у подарунок до кожного замовлення на суму від <b>500 грн</b>.</li>
-                                <li>Акція спрямована на залучення нових клієнтів та збільшення середнього чека доставки.</li>
+                            <h4 class="font-bold text-xl mb-2 text-gray-800">Механіка акції</h4>
+                            <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                <li>При покупці рідини, клієнт отримує картридж у подарунок.</li>
+                                <li>Акція спрямована на залучення нових клієнтів через платформу Glovo.</li>
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Цілі та KPI</h4>
-                            <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Залучити <b>100+</b> нових клієнтів за перший тиждень.</li>
-                                <li>Досягти <b>100+</b> замовлень до кінця місяця (за 2 тижні).</li>
-                                <li>Утримати середній чек доставки на позначці <b>500+</b> грн.</li>
-                                <li>Дарувати рідину `InBottle` до кожного замовлення від <b>500 грн</b>.</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Фінансовий прогноз</h4>
-                            <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Прогнозований оборот: <b>~82 500 грн/тиждень.</b></li>
-                                <li>Витрати на подарунки: <b>0 грн</b> (за рахунок постачальника).</li>
-                                <li>PR-цінність: <b>нематеріальний актив.</b></li>
+                            <h4 class="font-bold text-xl mb-2 text-gray-800">Цілі та KPI</h4>
+                            <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                <li>Залучити 100+ нових клієнтів.</li>
+                                <li>Досягти 100+ замовлень за 2 тижні.</li>
+                                <li>Цільовий показник середнього чека після закінчення акції 500+ грн.</li>
                             </ul>
                         </div>
                     </div>
                 </div>
-                <button class="toggle-details-btn w-full mt-8 py-2 rounded-lg font-semibold flex items-center justify-center">
-                    <span class="mr-2">Планові показники</span>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
-            </section>
-            
-            <section id="powerkit" class="content-block p-6 md:p-8">
-                <h2 class="text-4xl font-bold mb-8 text-white section-header">Ініціатива "PowerKit"</h2>
-                <div class="grid md:grid-cols-3 gap-8 text-center">
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Мета зі збору пристроїв</p>
-                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="500">0</span> шт.</p>
-                    </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Середній бонус клієнту</p>
-                        <p class="text-4xl font-bold text-white mt-2"><span class="counter-value" data-target="100">0</span> грн</p>
-                    </div>
-                    <div class="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <p class="text-sm text-gray-400">Прогноз зростання LTV</p>
-                        <p class="text-4xl font-bold accent-text-main mt-2">+<span class="counter-value" data-target="15">0</span>%</p>
-                    </div>
-                </div>
-                <div class="details-container">
-                    <div class="grid md:grid-cols-2 gap-8 mb-8">
-                        <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Механіка ініціативи</h4>
-                            <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Приймаємо відпрацьовані електронні сигарети.</li>
-                                <li>Видаємо спеціальні брендовані коробки та наклейки для кожного пристрою.</li>
-                                <li>Надаємо знижку на наступну покупку (бонуси) за кожен зданий пристрій.</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Цілі та KPI</h4>
-                            <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Зібрати <b>500+</b> пристроїв за місяць.</li>
-                                <li>Збільшити retention rate на <b>5%</b> серед учасників.</li>
-                                <li>Отримати <b>10+</b> згадок у локальних ЗМІ/блогах.</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <h4 class="font-bold text-xl mb-2 text-white">Фінансовий прогноз</h4>
-                            <ul class="list-disc list-inside text-gray-400 space-y-1">
-                                <li>Загальні витрати на бонуси: <b>~50 000 грн.</b></li>
-                                <li>Додатковий оборот від учасників: <b>~150 000 грн.</b></li>
-                                <li>PR-цінність: <b>нематеріальний актив.</b></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <button class="toggle-details-btn w-full mt-8 py-2 rounded-lg font-semibold flex items-center justify-center">
-                    <span class="mr-2">Детальний аналіз</span>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
             </section>
         </main>
     </div>
@@ -329,162 +240,12 @@
         const DashboardApp = {
             init() {
                 document.addEventListener('DOMContentLoaded', () => {
-                    this.initScrollAnimations();
                     this.initToTopButton();
-                    this.initAccordions();
-                    this.initFinancialCalculator();
-                    this.initCartridgeChart(); 
+                    this.initScrollAnimations();
+                    this.renderData();
                 });
             },
             
-            initAccordions() {
-                const buttons = document.querySelectorAll('.toggle-details-btn');
-                buttons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        const detailsContainer = button.previousElementSibling;
-                        detailsContainer.classList.toggle('open');
-                    });
-                });
-            },
-
-            initFinancialCalculator() {
-                const tableBody = document.getElementById('financial-table-body');
-                const selectAllCheckbox = document.getElementById('select-all-checkbox');
-                if (!tableBody || !selectAllCheckbox) return;
-
-                const financialData = [
-                    { name: 'Chaser Mix Ultra 30ml', promoMargin: 60.25 },
-                    { name: 'Chaser Black 30ml', promoMargin: 109.75 },
-                    { name: 'Chaser Pods 30ml', promoMargin: 109.75 },
-                    { name: 'Chaser Lux 30ml', promoMargin: 136.00 },
-                    { name: 'Octobar Black Limit 30ml', promoMargin: 53.50 },
-                    { name: 'Octobar NFT 30 ml/50 mg', promoMargin: 64.50 },
-                    { name: 'Octobar Prime 30ml', promoMargin: 136.00 },
-                    { name: 'Punch 30ml/5mg', promoMargin: 109.50 },
-                    { name: 'Mixbar', promoMargin: 70.50 },
-                    { name: 'Lucky', promoMargin: 91.50 }
-                ];
-
-                tableBody.innerHTML = '';
-                financialData.forEach((item, index) => {
-                    const row = document.createElement('tr');
-                    row.className = 'border-b border-neutral-800 hover:bg-neutral-800/50 transition-colors text-xs';
-                    row.innerHTML = `
-                        <td class="px-4 py-2"><input type="checkbox" id="promo-${index}" class="form-checkbox promo-checkbox" data-promo-margin="${item.promoMargin}" ${index === 0 ? 'checked' : ''}></td>
-                        <th scope="row" class="px-6 py-2 font-medium text-white whitespace-nowrap">${item.name}</th>
-                        <td class="px-6 py-2 font-bold accent-text-main text-right">${item.promoMargin.toFixed(2)}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-
-                const updateHandler = this.updateFinancials.bind(this);
-                document.querySelectorAll('.promo-checkbox').forEach(cb => cb.addEventListener('change', updateHandler));
-                selectAllCheckbox.addEventListener('change', (e) => {
-                    document.querySelectorAll('.promo-checkbox').forEach(cb => cb.checked = e.target.checked);
-                    updateHandler();
-                });
-
-                updateHandler();
-            },
-
-            initCartridgeChart() {
-                const ctx = document.getElementById('cartridgePastAnalysisChart')?.getContext('2d');
-                if (!ctx) return;
-                
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['До акції', 'Під час', 'Після акції'],
-                        datasets: [{
-                            label: 'Продажі, грн',
-                            data: [452828, 569133, 477562],
-                            backgroundColor: 'rgba(52, 211, 153, 0.7)',
-                            borderColor: 'rgba(52, 211, 153, 1)',
-                            borderWidth: 1,
-                            yAxisID: 'y',
-                        }, {
-                            label: 'Клієнти',
-                            data: [625, 847, 728],
-                            type: 'line',
-                            borderColor: 'rgba(255, 255, 255, 1)',
-                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                            tension: 0.2,
-                            yAxisID: 'y1',
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { position: 'left', ticks: { color: '#a0a5b6' }, grid: { color: 'rgba(52, 211, 153, 0.1)' } },
-                            y1: { position: 'right', ticks: { color: '#a0a5b6' }, grid: { drawOnChartArea: false } },
-                            x: { ticks: { color: '#a0a5b6' } }
-                        }
-                    }
-                });
-            },
-
-            updateFinancials() {
-                const avgMarginEl = document.getElementById('average-margin');
-                const reqGrowthEl = document.getElementById('required-growth');
-                const selectAllCheckbox = document.getElementById('select-all-checkbox');
-                if (!avgMarginEl || !reqGrowthEl) return;
-                
-                const baseMarginTarget = 170.71;
-                const financialDataLength = 10;
-                
-                const checkedBoxes = document.querySelectorAll('.promo-checkbox:checked');
-                const totalMargin = Array.from(checkedBoxes).reduce((sum, cb) => sum + parseFloat(cb.dataset.promoMargin), 0);
-                
-                selectAllCheckbox.checked = checkedBoxes.length === financialDataLength;
-
-                const averageMargin = (checkedBoxes.length > 0) ? totalMargin / checkedBoxes.length : 0;
-                const requiredGrowth = (averageMargin > 0) ? (baseMarginTarget / averageMargin - 1) * 100 : 0;
-
-                avgMarginEl.textContent = `${averageMargin.toFixed(2)} грн.`;
-                reqGrowthEl.textContent = `${requiredGrowth.toFixed(2)}%`;
-
-                reqGrowthEl.classList.toggle('text-red-500', requiredGrowth >= 0);
-                reqGrowthEl.classList.toggle('text-green-400', requiredGrowth < 0);
-            },
-
-            initScrollAnimations() {
-                 const animateCounter = (el) => {
-                     const target = +el.dataset.target;
-                     const duration = 1500;
-                     const stepTime = Math.max(1, Math.abs(Math.floor(duration / target)));
-                     let current = 0;
-                     const increment = Math.ceil(target / (duration / stepTime));
-
-                     const timer = setInterval(() => {
-                         current += increment;
-                         if (current >= target) {
-                             el.innerText = target.toLocaleString('uk-UA');
-                             clearInterval(timer);
-                         } else {
-                             el.innerText = current.toLocaleString('uk-UA');
-                         }
-                     }, stepTime);
-                 };
-
-                 const observer = new IntersectionObserver((entries) => {
-                     entries.forEach(entry => {
-                         if (entry.isIntersecting) {
-                             entry.target.classList.add('is-visible');
-                             const counters = entry.target.querySelectorAll('.counter-value');
-                             counters.forEach(counter => {
-                                 if (!counter.classList.contains('animated')) {
-                                     animateCounter(counter);
-                                     counter.classList.add('animated');
-                                 }
-                             });
-                         }
-                     });
-                 }, { threshold: 0.2 });
-                 document.querySelectorAll('.content-block').forEach(block => observer.observe(block));
-             },
-
             initToTopButton() {
                 const toTopButton = document.getElementById('to-top-button');
                 if (!toTopButton) return;
@@ -494,6 +255,621 @@
                 toTopButton.addEventListener('click', () => {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
+            },
+
+            initScrollAnimations() {
+                const animateCounter = (el) => {
+                    const target = parseFloat(el.dataset.target);
+                    const duration = 1500;
+                    const stepTime = 10;
+                    let start = 0;
+                    let startTime = null;
+
+                    const step = (timestamp) => {
+                        if (!startTime) startTime = timestamp;
+                        const progress = timestamp - startTime;
+                        let current = Math.min(progress / duration * target, target);
+                        el.innerText = current.toFixed(2) + el.dataset.unit;
+                        if (progress < duration) {
+                            window.requestAnimationFrame(step);
+                        } else {
+                            el.innerText = target.toFixed(2) + el.dataset.unit;
+                        }
+                    };
+
+                    window.requestAnimationFrame(step);
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            const counters = entry.target.querySelectorAll('.counter-value');
+                            counters.forEach(counter => {
+                                if (!counter.classList.contains('animated')) {
+                                    animateCounter(counter);
+                                    counter.classList.add('animated');
+                                }
+                            });
+                        }
+                    });
+                }, { threshold: 0.2 });
+                document.querySelectorAll('.content-block').forEach(block => observer.observe(block));
+            },
+            
+            // Hardcoded data from the CSV files
+            analyticsData: {
+                totalMargin: 1003866.78,
+                predictedDrop: -0.2757744818,
+                predictedGrowth: 0.3132978407,
+                clientGrowth: 250,
+                writeOffSum: 162042, // Added sum of write-offs
+                // Average margin of a standard set from the provided data
+                baseMarginPerSet: 170.71,
+                // Average sales per week from the base period (Неделя 18 + 19)
+                averageBaseSales: (384345 + 449878) / 2, 
+                // Average weekly margin from the base period (Неделя 18 + 19)
+                averageBaseMargin: (123628.87 + 148121.04) / 2,
+                weeklyData: [
+                    { week: '18', sales: 384345, margin: 123628.87, cleanMargin: 123628.87 },
+                    { week: '19', sales: 449878, margin: 148121.04, cleanMargin: 148121.04 },
+                    { week: '20', sales: 565805, margin: 194110.26, cleanMargin: 108493.26 },
+                    { week: '21', sales: 526805, margin: 181118.04, cleanMargin: 108112.04 },
+                    { week: '22', sales: 481965, margin: 163792.78, cleanMargin: 163792.78 },
+                    { week: '23', sales: 569133, margin: 193095.79, cleanMargin: 190972.79 }
+                ]
+            },
+
+            // Hardcoded promo items and their margins from the user's image
+            promoItems: [
+                { name: 'Chaser Mix Ultra 30ml', liquidMargin: 143.25 },
+                { name: 'Chaser Black 30ml', liquidMargin: 193.25 },
+                { name: 'Chaser Pods 30ml', liquidMargin: 193.25 },
+                { name: 'Chaser Lux 30ml', liquidMargin: 219.5 },
+                { name: 'Octobar Black Limit 30ml', liquidMargin: 137 },
+                { name: 'Octobar NFT 30 ml/50 mg', liquidMargin: 152 },
+                { name: 'Octobar Prime 30ml', liquidMargin: 219.5 },
+                { name: 'Punch 30ml/5mg', liquidMargin: 193.5 },
+                { name: 'Mixbar', liquidMargin: 163.5 },
+                { name: 'Lucky', liquidMargin: 185.5 }
+            ],
+
+            // Cost of the gifted cartridge, from the user's provided file "Акція (1).xlsx - Лист1.csv"
+            CARTRIDGE_COST: 85.56,
+            
+            // Hardcoded bonus program data from the user's image
+            bonusProgramData: {
+                months: ['Апр \'23', 'Май \'23', 'Июн \'23', 'Июл \'23', 'Авг \'23'],
+                counts: [2007, 2154, 2270, 2351, 2389],
+                percentages: [75.2, 80.7, 85.1, 88.1, 89.5]
+            },
+
+            // Hardcoded customer segment data from the user's image
+            customerSegmentData: {
+                labels: ['Участники бонусной программы', 'Покупателя без бонусной программы'],
+                counts: [1244, 1434],
+                total: 2678,
+                percentages: [46.45, 53.55]
+            },
+
+
+            renderData() {
+                this.renderAnalytics(this.analyticsData);
+                this.renderFinancialCalculator(this.promoItems, this.analyticsData);
+                this.initSalesChart(this.analyticsData);
+                this.initMarginChart(this.analyticsData);
+                this.initMarginPieChart(this.analyticsData);
+                this.initSalesAndCleanMarginChart(this.analyticsData);
+                this.initEfficiencyChart();
+                this.initClientGrowthChart(this.analyticsData);
+                this.initCustomerSegmentChart(this.customerSegmentData);
+            },
+
+            renderAnalytics(data) {
+                const container = document.getElementById('analytics-data');
+                // The client provided a photo showing results for week 21
+                const week21Data = data.weeklyData.find(d => d.week === '21');
+
+                const baseClients = 625;
+                const clientsDuringPromo = 847;
+                const clientsAfterPromo = 728;
+                
+                const clientGrowthDuringPromo = ((clientsDuringPromo - baseClients) / baseClients) * 100;
+                const clientGrowthAfterPromo = ((clientsAfterPromo - baseClients) / baseClients) * 100;
+                
+                const salesDuringPromo = week21Data.sales;
+                const averageBaseSales = data.averageBaseSales;
+                const salesGrowth = ((salesDuringPromo - averageBaseSales) / averageBaseSales) * 100;
+                
+                const items = [
+                    { title: "Прогнозоване падіння маржі (під час акції)", value: data.predictedDrop, color: "text-red-500", target: data.predictedDrop * 100, unit: "%" },
+                    { title: "Прогнозований ріст маржі (після акції)", value: data.predictedGrowth, color: "text-green-500", target: data.predictedGrowth * 100, unit: "%" },
+                    { title: "Ріст кількості покупців", value: clientGrowthDuringPromo, color: "text-green-500", target: clientGrowthDuringPromo, unit: "%" },
+                    { title: "Ріст клієнтів після акції", value: clientGrowthAfterPromo, color: "text-green-500", target: clientGrowthAfterPromo, unit: "%" },
+                    { title: "Сума списання за 2 тижні", value: data.writeOffSum, color: "text-red-500", target: data.writeOffSum, unit: " грн" },
+                    { title: "Ріст продажів", value: salesGrowth, color: "text-green-500", target: salesGrowth, unit: "%" }
+                ];
+
+                container.innerHTML = items.map(item => `
+                    <div class="bg-blue-50 p-6 rounded-2xl shadow-md border border-blue-100">
+                        <p class="text-sm text-gray-500">${item.title}</p>
+                        <p class="text-4xl font-bold ${item.color} mt-2"><span class="counter-value" data-target="${item.target.toFixed(2)}" data-unit="${item.unit}">0</span></p>
+                    </div>
+                `).join('');
+            },
+
+            renderFinancialCalculator(promoItems, analyticsData) {
+                const tableBody = document.getElementById('financial-table-body');
+                const selectAllCheckbox = document.getElementById('select-all-checkbox');
+                
+                tableBody.innerHTML = '';
+                promoItems.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-gray-200 hover:bg-blue-50 transition-colors text-xs text-gray-800';
+                    const isChecked = [0, 1, 2].includes(index); // Pre-select first 3 items
+                    row.innerHTML = `
+                        <td class="px-4 py-2"><input type="checkbox" class="form-checkbox promo-checkbox" data-liquid-margin="${item.liquidMargin}" data-promo-name="${item.name}" ${isChecked ? 'checked' : ''}></td>
+                        <th scope="row" class="px-6 py-2 font-medium whitespace-nowrap">${item.name}</th>
+                        <td class="px-6 py-2 font-bold text-blue-500 text-right">${this.formatCurrency(item.liquidMargin)}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                const updateHandler = this.updateFinancials.bind(this, analyticsData);
+                document.querySelectorAll('.promo-checkbox').forEach(cb => cb.addEventListener('change', updateHandler));
+                selectAllCheckbox.addEventListener('change', (e) => {
+                    document.querySelectorAll('.promo-checkbox').forEach(cb => cb.checked = e.target.checked);
+                    updateHandler();
+                });
+
+                updateHandler();
+            },
+
+            updateFinancials(analyticsData) {
+                const avgMarginEl = document.getElementById('average-margin');
+                const reqGrowthEl = document.getElementById('required-growth');
+                const selectAllCheckbox = document.getElementById('select-all-checkbox');
+                const totalItems = document.querySelectorAll('.promo-checkbox').length;
+                
+                const checkedBoxes = document.querySelectorAll('.promo-checkbox:checked');
+                const numSelected = checkedBoxes.length;
+                
+                selectAllCheckbox.checked = numSelected === totalItems;
+
+                let avgPromoMargin;
+                let requiredGrowth;
+                
+                if (numSelected === 0) {
+                    avgPromoMargin = 0;
+                    requiredGrowth = null;
+                } else {
+                    const totalLiquidMargin = Array.from(checkedBoxes).reduce((sum, cb) => sum + parseFloat(cb.dataset.liquidMargin), 0);
+                    const avgLiquidMargin = totalLiquidMargin / numSelected;
+                    
+                    // Average margin of the promo set is liquid margin minus cartridge cost
+                    avgPromoMargin = avgLiquidMargin - this.CARTRIDGE_COST;
+                    
+                    // The difference in margin per set
+                    const marginDifference = analyticsData.baseMarginPerSet - avgPromoMargin;
+
+                    // Calculate the required growth
+                    requiredGrowth = marginDifference / avgPromoMargin;
+                }
+                
+                avgMarginEl.textContent = `${this.formatCurrency(avgPromoMargin)}`;
+                
+                if (requiredGrowth === null || isNaN(requiredGrowth) || !isFinite(requiredGrowth)) {
+                    reqGrowthEl.textContent = 'Виберіть товари';
+                    reqGrowthEl.classList.remove('text-red-500', 'text-green-500');
+                } else {
+                    reqGrowthEl.textContent = `${(requiredGrowth * 100).toFixed(2)}%`;
+                    reqGrowthEl.classList.toggle('text-red-500', requiredGrowth > 0);
+                    reqGrowthEl.classList.toggle('text-green-500', requiredGrowth <= 0);
+                }
+
+                // Update the promo margin pie chart
+                const promoChartData = Array.from(checkedBoxes).map(cb => ({
+                    name: cb.dataset.promoName,
+                    margin: parseFloat(cb.dataset.liquidMargin)
+                }));
+                this.initPromoPieChart(promoChartData);
+            },
+
+            initSalesChart(data) {
+                const ctx = document.getElementById('salesChart')?.getContext('2d');
+                if (!ctx) return;
+                
+                const labels = data.weeklyData.map(d => `Тиждень ${d.week}`);
+                const sales = data.weeklyData.map(d => d.sales);
+                
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Продажі, грн',
+                                data: sales,
+                                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(59, 130, 246, 0.1)' } },
+                            x: { ticks: { color: '#6b7280' } }
+                        }
+                    }
+                });
+            },
+
+            initMarginChart(data) {
+                const ctx = document.getElementById('marginChart')?.getContext('2d');
+                if (!ctx) return;
+                
+                const labels = data.weeklyData.map(d => `Тиждень ${d.week}`);
+                const margins = data.weeklyData.map(d => d.margin);
+                const cleanMargins = data.weeklyData.map(d => d.cleanMargin);
+                
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Маржа, грн',
+                                data: margins,
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                                tension: 0.2,
+                                fill: true,
+                                yAxisID: 'y'
+                            }, 
+                            {
+                                label: 'Чиста маржа, грн',
+                                data: cleanMargins,
+                                borderColor: 'rgba(107, 114, 128, 1)',
+                                backgroundColor: 'rgba(107, 114, 128, 0.2)',
+                                tension: 0.2,
+                                fill: true,
+                                yAxisID: 'y'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: true, labels: { color: '#6b7280' } } },
+                        scales: {
+                            y: { position: 'left', ticks: { color: '#6b7280' }, grid: { color: 'rgba(59, 130, 246, 0.1)' } },
+                            x: { ticks: { color: '#6b7280' } }
+                        }
+                    }
+                });
+            },
+
+            initMarginPieChart(data) {
+                const ctx = document.getElementById('marginPieChart')?.getContext('2d');
+                if (!ctx) return;
+
+                const totalMargin = data.totalMargin;
+                const totalCleanMargin = data.weeklyData.reduce((sum, d) => sum + d.cleanMargin, 0);
+                const marginDifference = totalMargin - totalCleanMargin;
+
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Чиста маржа', 'Списання'],
+                        datasets: [{
+                            data: [totalCleanMargin, marginDifference],
+                            backgroundColor: [
+                                'rgba(59, 130, 246, 0.8)',
+                                'rgba(239, 68, 68, 0.8)'
+                            ],
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#6b7280',
+                                    usePointStyle: true
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+
+            initSalesAndCleanMarginChart(data) {
+                const ctx = document.getElementById('salesCleanMarginChart')?.getContext('2d');
+                if (!ctx) return;
+                
+                const labels = data.weeklyData.map(d => `Тиждень ${d.week}`);
+                const sales = data.weeklyData.map(d => d.sales);
+                const cleanMargins = data.weeklyData.map(d => d.cleanMargin);
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Продажі',
+                                data: sales,
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                                tension: 0.2,
+                                fill: false,
+                                yAxisID: 'y-sales'
+                            },
+                            {
+                                label: 'Чиста маржа',
+                                data: cleanMargins,
+                                borderColor: 'rgba(107, 114, 128, 1)',
+                                backgroundColor: 'rgba(107, 114, 128, 0.2)',
+                                tension: 0.2,
+                                fill: false,
+                                yAxisID: 'y-margin'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                labels: {
+                                    color: '#6b7280'
+                                }
+                            }
+                        },
+                        scales: {
+                            'y-sales': {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                ticks: { color: '#6b7280' },
+                                grid: { color: 'rgba(59, 130, 246, 0.1)' }
+                            },
+                            'y-margin': {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                grid: { drawOnChartArea: false },
+                                ticks: { color: '#6b7280' }
+                            },
+                            x: { ticks: { color: '#6b7280' } }
+                        }
+                    }
+                });
+            },
+
+            initEfficiencyChart() {
+                const ctx = document.getElementById('efficiencyChart')?.getContext('2d');
+                if (!ctx) return;
+
+                const labels = ['Продажі', 'Маржа', 'Списання', 'Чиста маржа'];
+                const promoData = [526805, 181118.04, 73006, 108112.04];
+                const baseData = [417111.5, 135874.955, 0, 135874.955];
+                
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Акція (Тиждень 21)',
+                                data: promoData,
+                                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Базовий період (Тижні 18-19)',
+                                data: baseData,
+                                backgroundColor: 'rgba(107, 114, 128, 0.7)',
+                                borderColor: 'rgba(107, 114, 128, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#6b7280'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#6b7280' },
+                                grid: { color: 'rgba(59, 130, 246, 0.1)' }
+                            },
+                            x: {
+                                ticks: { color: '#6b7280' }
+                            }
+                        }
+                    }
+                });
+            },
+
+            initClientGrowthChart(data) {
+                const ctx = document.getElementById('clientGrowthChart')?.getContext('2d');
+                if (!ctx) return;
+
+                const baseClients = 625;
+                const clientsDuringPromo = 847;
+                const clientsAfterPromo = 728;
+
+                const chartData = {
+                    labels: ['Базовий період', 'Період акції', 'Після акції'],
+                    datasets: [{
+                        label: 'Кількість клієнтів',
+                        data: [baseClients, clientsDuringPromo, clientsAfterPromo],
+                        backgroundColor: [
+                            'rgba(107, 114, 128, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(59, 130, 246, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(107, 114, 128, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(59, 130, 246, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                };
+
+                const chartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#6b7280'
+                            },
+                            grid: {
+                                color: 'rgba(59, 130, 246, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#6b7280'
+                            }
+                        }
+                    }
+                };
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: chartData,
+                    options: chartOptions
+                });
+            },
+
+            initCustomerSegmentChart(data) {
+                const ctx = document.getElementById('customerSegmentChart')?.getContext('2d');
+                if (!ctx) return;
+
+                const chartData = {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            data: data.percentages,
+                            backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(107, 114, 128, 0.8)'],
+                            borderColor: ['#ffffff', '#ffffff'],
+                            borderWidth: 2,
+                        }
+                    ]
+                };
+
+                const chartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#6b7280',
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    return `${label}: ${value}%`;
+                                }
+                            }
+                        }
+                    }
+                };
+
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: chartData,
+                    options: chartOptions
+                });
+            },
+
+            initPromoPieChart(promoChartData) {
+                const ctx = document.getElementById('promoMarginPieChart')?.getContext('2d');
+                if (!ctx) return;
+
+                const labels = promoChartData.map(item => item.name);
+                const data = promoChartData.map(item => item.margin);
+                const backgroundColors = [
+                    '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#6366f1',
+                    '#06b6d4', '#f97316', '#a855f7', '#14b8a6', '#f472b6'
+                ];
+                const chartStatus = Chart.getChart('promoMarginPieChart');
+                if (chartStatus) {
+                    chartStatus.destroy();
+                }
+
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: backgroundColors.slice(0, data.length),
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#6b7280',
+                                    usePointStyle: true
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+
+            formatCurrency(value) {
+                if (typeof value !== 'number' || isNaN(value)) {
+                    return '0.00 грн';
+                }
+                return value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + ' грн';
+            },
+
+            formatPercentage(value) {
+                if (typeof value !== 'number' || isNaN(value) || !isFinite(value)) {
+                    return '0.00%';
+                }
+                return (value).toFixed(2) + '%';
             }
         };
 
