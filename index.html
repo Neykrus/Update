@@ -1,396 +1,296 @@
+```html
 <!DOCTYPE html>
-<html lang="uk" class="scroll-smooth">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Стратегія реорганізації відділу закупівель</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Сімейний Бюджет</title>
+
+    <!-- iOS / Safari Web App Meta-теги (для работы как приложение на iPhone) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Бюджет">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#10b981">
+    
+    <!-- Иконка приложения для рабочего стола iPhone (SVG Data URI) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='128' fill='%2310b981'/%3E%3Cpath d='M256 120c-75.1 0-136 60.9-136 136s60.9 136 136 136 136-60.9 136-136S331.1 120 256 120zm16 80v56h56c0 30.9-25.1 56-56 56s-56-25.1-56-56 25.1-56 56-56zm-16-16c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z' fill='%23ffffff'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2310b981'/%3E%3Ctext x='50' y='64' font-size='42' text-anchor='middle' fill='white' font-family='system-ui'%3E₴%3C/text%3E%3C/svg%3E">
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        corporate: { 50: '#f4f6f8', 100: '#e2e8f0', 300: '#cbd5e1', 500: '#64748b', 700: '#334155', 800: '#1e293b', 900: '#0f172a' },
-                        accent: { 500: '#0ea5e9', 600: '#0284c7' },
-                        success: { 500: '#10b981' }
-                    },
-                    animation: {
-                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards',
-                        'float-slow': 'float 6s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        fadeInUp: { from: { opacity: '0', transform: 'translateY(30px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
-                        float: { '0%, 100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-10px)' } },
+                        brand: {
+                            50: '#f0fdf4',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        }
                     }
                 }
             }
         }
     </script>
     <style>
-        body { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); color: #334155; }
-        .glass-header { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(203, 213, 225, 0.5); box-shadow: 0 4px 20px -6px rgba(0, 0, 0, 0.05); }
-        .card-hover { transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1); }
-        .card-hover:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.12); }
-        .leader-card { 
-            background: linear-gradient(125deg, #d9f0dd 0%, #b8e0c0 100%); 
-            border-left: 6px solid #15803d; 
-            transition: all 0.3s;
-            box-shadow: 0 8px 20px -8px rgba(0,0,0,0.1);
-        }
-        .leader-card:hover {
-            background: linear-gradient(125deg, #e2f4e5 0%, #c2e8ca 100%);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -12px rgba(21, 128, 61, 0.2);
-        }
-        .roadmap-glow { box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2); background: linear-gradient(115deg, #fff8e7, #fff3d6); border: 1px solid rgba(212, 192, 107, 0.5); }
-        .table-grace tr:hover { background: #f1f5f9; }
-        .nav-link { position: relative; }
-        .nav-link:after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: #0ea5e9; transition: width 0.3s ease; }
-        .nav-link:hover:after { width: 100%; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
-        .hero-badge { backdrop-filter: blur(12px); background: rgba(255,255,255,0.7); }
-        .title-gradient {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0ea5e9 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            display: inline-block;
+        /* Поддержка безопасных зон iPhone (Notch / Dynamic Island / Home Bar) */
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* === СТИЛІ ДЛЯ ДРУКУ / PDF === */
-        @media print {
-            /* Видаляємо фон, тіні, анімації для кращого друку */
-            body {
-                background: white;
-                color: black;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            
-            /* Ховаємо навігацію, кнопки та елементи з анімацією при друку */
-            nav, .glass-header, .hero-badge, .absolute, [data-aos], .animate-float-slow, .animate-ping {
-                display: none !important;
-            }
-            
-            /* Відступи для друку */
-            main {
-                padding-top: 0 !important;
-                margin-top: 0 !important;
-            }
-            
-            section {
-                margin: 0 !important;
-                padding: 20px 0 !important;
-                break-inside: avoid;
-                page-break-inside: avoid;
-            }
-            
-            /* Головний заголовок не розриваємо */
-            .hero-badge + div, h1 {
-                break-inside: avoid;
-                page-break-after: avoid;
-            }
-            
-            /* Картки не розриваються */
-            .leader-card, .card-hover > div, .roadmap-glow, .bg-white.rounded-2xl {
-                break-inside: avoid;
-                page-break-inside: avoid;
-                box-shadow: none;
-                border: 1px solid #ccc;
-            }
-            
-            /* Сітка для структури */
-            .grid {
-                break-inside: avoid;
-            }
-            
-            /* Кожен великий блок не розриваємо */
-            .leader-card, .card-hover, .roadmap-glow {
-                break-inside: avoid;
-                page-break-inside: avoid;
-                margin-bottom: 20px;
-            }
-            
-            /* Таблиця не розривається */
-            table {
-                break-inside: avoid;
-                page-break-inside: avoid;
-            }
-            
-            /* Пункти списку */
-            ul, li, p {
-                break-inside: avoid;
-            }
-            
-            /* Кольори фону зберігаємо */
-            .leader-card, .bg-\\[\\#fef2b8\\], .roadmap-glow {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            
-            /* Поля сторінки */
-            @page {
-                margin: 1.5cm;
-                size: A4;
-            }
-            
-            /* Заголовки не відриваються від контенту */
-            h2, h3, h4 {
-                break-after: avoid;
-                page-break-after: avoid;
-            }
-            
-            /* Вимикаємо hover-ефекти */
-            .card-hover:hover {
-                transform: none;
-                box-shadow: none;
-            }
-            
-            .leader-card:hover {
-                transform: none;
-                box-shadow: none;
-            }
+        /* Плавные полосы прокрутки */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .touch-none {
+            touch-action: none;
+        }
+
+        @keyframes modalShow {
+            from { opacity: 0; transform: scale(0.96) translateY(6px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-animate {
+            animation: modalShow 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
     </style>
 </head>
-<body class="antialiased overflow-x-hidden">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col font-sans select-none">
 
-    <nav class="fixed top-0 w-full glass-header z-50 shadow-sm transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-3 group">
-                    <div class="w-9 h-9 bg-gradient-to-br from-corporate-800 to-corporate-700 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-md transition-all duration-300 group-hover:scale-105">ВЗ</div>
-                    <span class="font-bold bg-gradient-to-r from-corporate-800 to-corporate-600 bg-clip-text text-transparent tracking-tight hidden sm:block text-xl">Проєкт структури відділу</span>
+    <!-- Верхня навігаційна панель -->
+    <header class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                 </div>
-                <div class="hidden md:flex space-x-8 text-sm font-semibold text-corporate-600">
-                    <a href="#structure" class="nav-link hover:text-corporate-900 transition-colors">Структура</a>
-                    <a href="#financials" class="nav-link hover:text-corporate-900 transition-colors">Бюджет (ФОП)</a>
-                    <a href="#roadmap" class="nav-link hover:text-corporate-900 transition-colors">План</a>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-tight">Сімейний Бюджет</h1>
+                    <p class="text-[11px] text-slate-400 font-medium">Планування доходів та витрат</p>
                 </div>
-                <div class="md:hidden">
-                    <button id="mobile-menu-btn" class="text-corporate-700">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </div>
+
+            <!-- Валюта, кнопка шерингу та скидання -->
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <!-- Валюта -->
+                <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600">
+                    <button type="button" onclick="setCurrency('₴')" id="curr-uah" class="px-2 py-0.5 rounded-lg bg-white text-emerald-600 shadow-xs">₴</button>
+                    <button type="button" onclick="setCurrency('$')" id="curr-usd" class="px-2 py-0.5 rounded-lg hover:text-emerald-600 transition">$</button>
+                    <button type="button" onclick="setCurrency('€')" id="curr-eur" class="px-2 py-0.5 rounded-lg hover:text-emerald-600 transition">€</button>
+                </div>
+
+                <!-- Кнопка надіслати посилання на інший iPhone -->
+                <button onclick="shareAppOnDevice()" title="Відкрити на іншому iPhone" class="p-2 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition flex items-center gap-1 text-xs font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                    </svg>
+                    <span class="hidden sm:inline">Поділитися</span>
+                </button>
+
+                <!-- Скидання -->
+                <button onclick="resetToDefaults()" title="Відновити типові значення" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основний контейнер -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1 w-full space-y-5">
+
+        <!-- Банер стану бюджету (Дефіцит або Профіцит) -->
+        <div id="budgetAlertBanner" class="hidden p-3.5 rounded-2xl border transition duration-200"></div>
+
+        <!-- Головні фінансові картки -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <!-- Дохід -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Сімейний дохід</span>
+                    <button onclick="openIncomeModal()" class="text-xs text-emerald-600 font-bold hover:underline flex items-center gap-0.5">
+                        <span>Змінити</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </button>
                 </div>
+                <div class="text-xl sm:text-2xl font-black text-slate-900" id="stat-total-income">0 ₴</div>
+                <span class="text-[11px] text-emerald-600 font-semibold mt-1 inline-flex items-center gap-1" id="stat-income-sources">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 2 джерела
+                </span>
+            </div>
+
+            <!-- Витрати -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Загальні витрати</span>
+                <div class="text-xl sm:text-2xl font-black text-rose-600" id="stat-total-expenses">0 ₴</div>
+                <span class="text-[11px] text-slate-500 mt-1 block font-medium" id="stat-expense-count">0 категорій</span>
+            </div>
+
+            <!-- Вільний залишок -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Вільний залишок</span>
+                <div class="text-xl sm:text-2xl font-black" id="stat-balance">0 ₴</div>
+                <span class="text-[11px] mt-1 font-semibold block" id="stat-balance-desc">Чистий потік</span>
+            </div>
+
+            <!-- Норма заощаджень -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Заощадження</span>
+                <div class="text-xl sm:text-2xl font-black text-indigo-600" id="stat-savings-rate">0%</div>
+                <span class="text-[11px] text-slate-400 mt-1 block font-medium">Рекомендовано: від 20%</span>
             </div>
         </div>
-        <div id="mobile-menu" class="md:hidden hidden bg-white/95 backdrop-blur-md border-b border-corporate-100 px-4 py-3 space-y-2">
-            <a href="#structure" class="block py-2 text-corporate-700 font-medium hover:text-accent-600">Структура</a>
-            <a href="#financials" class="block py-2 text-corporate-700 font-medium hover:text-accent-600">Бюджет (ФОП)</a>
-            <a href="#roadmap" class="block py-2 text-corporate-700 font-medium hover:text-accent-600">План</a>
+
+        <!-- Шкала використання доходу -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+            <div class="flex items-center justify-between gap-2 mb-2 text-xs">
+                <span class="font-bold text-slate-800 flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                    Баланс доходів та витрат
+                </span>
+                <span class="font-semibold text-slate-500" id="budgetProgressLabel">Витрачено 0%</span>
+            </div>
+            <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
+                <div id="barExpenses" class="h-full bg-rose-500 transition-all duration-300" style="width: 0%"></div>
+                <div id="barSavings" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between items-center text-[11px] text-slate-500 mt-2">
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Витрати: <strong id="barExpenseText">0</strong></span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Залишок: <strong id="barSavingsText">0</strong></span>
+            </div>
         </div>
-    </nav>
 
-    <main class="pt-24 pb-20">
-        <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center md:text-left relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl -z-0 animate-float-slow"></div>
-            <div class="absolute bottom-0 left-0 w-72 h-72 bg-success-500/10 rounded-full blur-3xl -z-0"></div>
-            <div data-aos="fade-up" data-aos-duration="800" class="relative z-10">
-                <div class="inline-flex items-center gap-2 bg-white/60 backdrop-blur-sm rounded-full px-4 py-1.5 border border-corporate-200 shadow-sm mb-6 hero-badge">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-500 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-600"></span>
-                    </span>
-                    <span class="text-xs font-semibold uppercase tracking-wider text-corporate-700">Реорганізація 2026</span>
-                </div>
-                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight mb-6">
-                    <span class="bg-gradient-to-r from-corporate-900 via-corporate-700 to-accent-600 bg-clip-text text-transparent">Структура та план розвитку <br></span>
-                    <span class="bg-gradient-to-r from-accent-500 to-accent-600 bg-clip-text text-transparent">відділу закупівель</span>
-                </h1>
-                <p class="text-lg text-corporate-600 max-w-2xl mx-auto md:mx-0 leading-relaxed">Системна оптимізація, автоматизація та масштабування. Новий підхід до управління закупівлями.</p>
-            </div>
-        </section>
-
-        <!-- Структура -->
-        <section id="structure" class="max-w-6xl mx-auto px-4 py-16">
-            <div data-aos="fade-up" data-aos-duration="600">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-center relative inline-block mx-auto w-full">
-                    <span class="title-gradient">Організаційна структура</span>
-                    <div class="w-24 h-1 bg-gradient-to-r from-corporate-800 to-accent-500 rounded-full mx-auto mt-3"></div>
-                </h2>
-                <p class="text-center text-corporate-500 mb-12">Рольова модель та зони відповідальності</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Керівник -->
-                <div class="md:col-span-3 mb-4" data-aos="zoom-in-up" data-aos-duration="700">
-                    <div class="leader-card rounded-2xl p-6 shadow-xl transition-all">
-                        <div class="flex items-center gap-3 mb-5 border-b border-emerald-800/20 pb-3">
-                            <div class="w-12 h-12 rounded-full bg-white/60 flex items-center justify-center text-2xl shadow-inner">👔</div>
-                            <h3 class="text-2xl font-extrabold text-slate-800 tracking-tight">Керівник відділу закупівель</h3>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-800 font-medium">
-                            <p>• Управління відділом</p>
-                            <p>• Розробка та впровадження стратегії розвитку</p>
-                            <p>• Планування, контроль бюджету та оптимізація витрат</p>
-                            <p>• Контроль фінансових показників</p>
-                            <p>• Робота з ключовими постачальниками та проведення переговорів</p>
-                            <p>• Аналіз ринку</p>
-                            <p>• Пошук, впровадження і розвиток нових категорій та сервісів</p>
-                            <p>• Опрацювання звітностей від підлеглих</p>
-                            <p>• Навчання персоналу (закупівельників)</p>
-                            <p>• Формування асортиментних матриць для нових ТТ</p>
-                            <p>• Комунікація з відділом маркетингу щодо акцій/промо, прорахунки та запуск</p>
-                            <p>• Систематизація процесів та інтеграція інструментів аналізу</p>
-                            <p>• Контроль браку та руху товара</p>
-                            <p>• Контроль поставок</p>
-                            <p>• Забезпечення безперебійної наявності товару на ТТ та складі</p>
-                            <p>• Аналіз ринку та конкурентів</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Закупівельник гурту -->
-                <div data-aos="fade-right" data-aos-delay="100" class="card-hover">
-                    <div class="bg-[#fef2b8] p-6 rounded-2xl h-full shadow-md border-l-8 border-amber-400 transition-all hover:shadow-xl">
-                        <div class="flex items-center gap-2 mb-4"><span class="text-2xl">📦</span><h4 class="font-extrabold text-lg text-amber-900">Закупівельник гурту</h4></div>
-                        <ul class="text-sm space-y-2 text-stone-700">
-                            <li>• Оптові закупівлі</li>
-                            <li>• Контроль залишків</li>
-                            <li>• Робота з оборотністю та подання звітності</li>
-                            <li>• Робота з випадіннями та подання звітності</li>
-                            <li>• Комунікація з постачальниками</li>
-                            <li>• Контроль поставок (кількість, якість, ціни)</li>
-                            <li>• Моніторинг цін на товари китайського виробництва</li>
-                            <li>• Комунікація з відділом продажів для формування потреби</li>
-                            <li>• Ведення графіку оплат</li>
-                            <li>• Опрацювання складів браку</li>
-                            <li>• Подання звітності керівнику</li>
-                            <li>• Комунікація з РЦ</li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- Оператор -->
-                <div data-aos="fade-up" data-aos-delay="200" class="card-hover">
-                    <div class="bg-[#fef2b8] p-6 rounded-2xl h-full shadow-md border-l-8 border-amber-400 transition-all hover:shadow-xl">
-                        <div class="flex items-center gap-2 mb-4"><span class="text-2xl">🖥️</span><h4 class="font-extrabold text-lg text-amber-900">Оператор</h4></div>
-                        <ul class="text-sm space-y-2 text-stone-700">
-                            <li>• Внесення замовлень, створення карток</li>
-                            <li>• Документація гурт+роздріб</li>
-                            <li>• Оприбуткування товарів та звіти</li>
-                            <li>• Звітність з відтермінувань</li>
-                            <li>• Акти розбіжностей</li>
-                            <li>• Актуалізація цін</li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- Закупівельник роздрібу -->
-                <div data-aos="fade-left" data-aos-delay="300" class="card-hover">
-                    <div class="bg-[#fef2b8] p-6 rounded-2xl h-full shadow-md border-l-8 border-amber-400 transition-all hover:shadow-xl">
-                        <div class="flex items-center gap-2 mb-4"><span class="text-2xl">🛒</span><h4 class="font-extrabold text-lg text-amber-900">Закупівельник роздрібу</h4></div>
-                        <ul class="text-sm space-y-2 text-stone-700">
-                            <li>• Закупівлі для роздрібу</li>
-                            <li>• Контроль залишків</li>
-                            <li>• Опрацювання складів браку</li>
-                            <li>• Формування замовлень з РЦ для ТТ</li>
-                            <li>• Звітність з оборотності та випадінь</li>
-                            <li>• Комунікація з гуртом щодо наявності/цін</li>
-                            <li>• Моніторинг конкурентів</li>
-                            <li>• Комунікація з постачальниками</li>
-                            <li>• Контроль поставок (кількість, якість, ціни)</li>
-                            <li>• Ведення графіку оплат</li>
-                            <li>• Контроль завантаження товарів нових ТТ</li>
-                            <li>• Подання місячної звітності керівнику</li>
-                            <li>• Комунікація з РЦ</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Бюджет -->
-        <section id="financials" class="max-w-4xl mx-auto px-4 py-16 relative">
-            <div class="absolute inset-0 bg-gradient-to-r from-accent-50/20 to-transparent rounded-3xl -z-10"></div>
-            <div data-aos="flip-up" data-aos-duration="600">
-                <h2 class="text-3xl md:text-4xl font-bold text-corporate-900 mb-2 text-center"><span class="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">Бюджет (ФОП)</span></h2>
-                <p class="text-center text-corporate-500 mb-10">Прозора система мотивації та фіксована + KPI частина</p>
-            </div>
-            <div data-aos="zoom-in" data-aos-duration="800" class="bg-white rounded-2xl shadow-2xl border border-corporate-100 overflow-hidden">
-                <table class="w-full text-left text-sm md:text-base">
-                    <thead class="bg-gradient-to-r from-corporate-800 to-corporate-700 text-white font-bold uppercase tracking-wider">
-                        <tr><th class="px-6 py-5">Посада</th><th class="px-6 py-5">Зарплата (грн)</th></tr>
-                    </thead>
-                    <tbody class="divide-y divide-corporate-100">
-                        <tr class="table-grace"><td class="px-6 py-4 font-semibold text-corporate-800">Керівник</td><td class="px-6 py-4 text-accent-600 font-bold">Обговорюється</td></tr>
-                        <tr class="table-grace"><td class="px-6 py-4 font-semibold text-corporate-800">Закупівельник гурту</td><td class="px-6 py-4 text-emerald-700 font-semibold">30 000 <span class="text-xs text-corporate-400">(20к ставка + 10к KPI)</span></td></tr>
-                        <tr class="table-grace"><td class="px-6 py-4 font-semibold text-corporate-800">Закупівельник роздрібу</td><td class="px-6 py-4 text-emerald-700 font-semibold">25 000 <span class="text-xs text-corporate-400">(15к ставка + 10к KPI)</span></td></tr>
-                        <tr class="table-grace"><td class="px-6 py-4 font-semibold text-corporate-800">Оператор</td><td class="px-6 py-4 text-emerald-700 font-semibold">15 000 - 20 000</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- План -->
-        <section id="roadmap" class="max-w-4xl mx-auto px-4 py-16">
-            <div data-aos="fade-up" data-aos-duration="700" class="roadmap-glow rounded-2xl p-8 md:p-10 transition-all duration-500 hover:shadow-2xl relative overflow-hidden group">
-                <div class="absolute top-0 right-0 w-40 h-40 bg-amber-200/30 rounded-full blur-2xl -z-0 group-hover:scale-150 transition-transform duration-700"></div>
-                <h2 class="text-3xl font-bold mb-6 text-center text-stone-800 flex items-center justify-center gap-2"><span class="text-4xl">📌</span> План відділу на квартал</h2>
-                <div class="space-y-8 relative z-10">
-                    <div class="flex gap-4 flex-col md:flex-row md:items-start border-l-4 border-accent-500 pl-5 md:pl-6">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-accent-100 flex items-center justify-center text-accent-700 font-bold">1</div>
-                        <div><h3 class="font-extrabold text-xl text-corporate-800 mb-2">⚡ Впровадження автоматизованого контролю випадінь і замовлень</h3><ul class="list-disc pl-5 text-stone-600"><li>Автоматизація контролю залишків.</li><li>Розробка системи формування замовлень гурту.</li></ul></div>
-                    </div>
-                    <div class="flex gap-4 flex-col md:flex-row md:items-start border-l-4 border-amber-500 pl-5 md:pl-6">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 font-bold">2</div>
-                        <div><h3 class="font-extrabold text-xl text-corporate-800 mb-2">📈 Створення нових джерел доходу</h3><ul class="list-disc pl-5 text-stone-600"><li>Розвиток формату міні-маркет, відкриття 3х міні маркетів.</li><li>Впровадження послуг як базової одиниці продажу.</li><li>Розширення асортименту ТТ новими категоріями (Акциз, аксесуари, імпульсний товар).</li><li>Проведення зустрічей з всима активними постачальниками щодо покращення умов.</li></ul></div>
-                    </div>
-                    <div class="flex gap-4 flex-col md:flex-row md:items-start border-l-4 border-emerald-500 pl-5 md:pl-6">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">3</div>
-                        <div><h3 class="font-extrabold text-xl text-corporate-800 mb-2">🔄 Оптимізація залишків</h3><ul class="list-disc pl-5 text-stone-600"><li>Ліквідація заліза С-категорії.</li></ul></div>
-                    </div>
-                    <div class="flex gap-4 flex-col md:flex-row md:items-start border-l-4 border-purple-500 pl-5 md:pl-6">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold">4</div>
-                        <div><h3 class="font-extrabold text-xl text-corporate-800 mb-2">🎯 Управління ефективністю</h3><ul class="list-disc pl-5 text-stone-600"><li>Розробка та впровадження таск-менеджера для постановки задач, контролю виконання та планування зустрічей.</li></ul></div>
-                    </div>
-                    <div class="flex gap-4 flex-col md:flex-row md:items-start border-l-4 border-sky-500 pl-5 md:pl-6">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center text-sky-700 font-bold">5</div>
-                        <div><h3 class="font-extrabold text-xl text-corporate-800 mb-2">📊 Аналітика ефективності асортименту</h3><ul class="list-disc pl-5 text-stone-600"><li>Створення механізмів аналізу оборотності, ABC-аналізу, продажів та маржинальності (впровадження регулярних звітів, дашбордів).</li></ul></div>
-                    </div>
-                    <div class="flex gap-4 flex-col md:flex-row md:items-start border-l-4 border-indigo-500 pl-5 md:pl-6">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold">6</div>
-                        <div><h3 class="font-extrabold text-xl text-corporate-800 mb-2">🎓 Навчання та розвиток команди ТТ</h3><ul class="list-disc pl-5 text-stone-600"><li>Створення системи навчання продавців по товару (тренінги, знання акцій, техніки продажу).</li></ul></div>
-                    </div>
-                    <div class="flex gap-4 flex-col md:flex-row md:items-start border-l-4 border-rose-500 pl-5 md:pl-6">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center text-rose-700 font-bold">7</div>
-                        <div><h3 class="font-extrabold text-xl text-corporate-800 mb-2">🏷️ Промо-активності</h3><ul class="list-disc pl-5 text-stone-600"><li>Впровадження реєстрів акцій (єдиний перелік діючих та планованих акцій, контроль ефективності).</li></ul></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <div class="text-center text-corporate-400 text-xs py-8 border-t border-corporate-100 max-w-6xl mx-auto mt-8">
-            <p>© 2026 Стратегія реорганізації відділу закупівель — сучасний підхід до ефективності</p>
-        </div>
-    </main>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            AOS.init({ duration: 800, once: true, offset: 30, easing: 'ease-out-quad' });
+        <!-- Робоча зона: Діаграма Canvas + Керування категоріями -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             
-            const mobileBtn = document.getElementById('mobile-menu-btn');
-            const mobileMenu = document.getElementById('mobile-menu');
-            if(mobileBtn) {
-                mobileBtn.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
-                });
-            }
+            <!-- Ліва колонка: Canvas Діаграма -->
+            <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs flex flex-col items-center">
+                <div class="w-full flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                    <div>
+                        <h2 class="font-bold text-slate-900 text-sm sm:text-base">Секторна діаграма витрат</h2>
+                        <p class="text-[11px] text-slate-400">Торкніться сектора для виділення</p>
+                    </div>
+
+                    <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold text-slate-600">
+                        <button id="btn-donut" onclick="setChartType('donut')" class="px-2.5 py-1 rounded-lg bg-white text-emerald-600 shadow-xs transition">Кільце</button>
+                        <button id="btn-pie" onclick="setChartType('pie')" class="px-2.5 py-1 rounded-lg hover:text-emerald-600 transition">Пиріг</button>
+                    </div>
+                </div>
+
+                <div class="relative w-full aspect-square max-w-[390px] flex items-center justify-center">
+                    <canvas id="chartCanvas" class="w-full h-full cursor-pointer touch-none"></canvas>
+                    
+                    <!-- Тултіп для секторів -->
+                    <div id="chartTooltip" class="absolute pointer-events-none bg-slate-900/95 backdrop-blur-xs text-white px-3 py-2 rounded-xl text-xs font-medium shadow-2xl transform -translate-x-1/2 -translate-y-full opacity-0 transition-opacity duration-150 z-20 border border-slate-700">
+                        <div class="flex items-center gap-1.5 mb-1">
+                            <span id="tooltipColor" class="w-2.5 h-2.5 rounded-full inline-block"></span>
+                            <span id="tooltipName" class="font-semibold text-slate-100"></span>
+                        </div>
+                        <div class="flex justify-between items-center gap-3 text-slate-300">
+                            <span id="tooltipAmount" class="font-mono text-white text-xs font-bold"></span>
+                            <span id="tooltipPercent" class="text-emerald-300 bg-emerald-950/80 px-1.5 py-0.5 rounded text-[10px]"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3 text-[11px] text-slate-400 flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" /></svg>
+                    Клік по сектору фіксує обрану категорію
+                </div>
+            </div>
+
+            <!-- Права колонка: Форма та список витрат -->
+            <div class="lg:col-span-5 space-y-4">
+                
+                <!-- Форма додавання -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs">
+                    <h2 class="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Додати статтю витрат
+                    </h2>
+
+                    <form id="addCategoryForm" onsubmit="handleAddCategory(event)" class="space-y-3">
+                        <div>
+                            <input type="text" id="catNameInput" required placeholder="Назва (напр.: Оренда, Продукти, Садок)" 
+                                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="catAmountInput" required min="1" step="any" placeholder="Сума" 
+                                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                            
+                            <div class="flex items-center gap-1.5">
+                                <input type="color" id="catColorInput" value="#10b981" 
+                                    class="w-9 h-9 p-0.5 rounded-xl border border-slate-200 cursor-pointer bg-white flex-shrink-0">
+                                <div class="flex gap-1 overflow-x-auto py-1">
+                                    <button type="button" onclick="pickPresetColor('#ef4444')" class="w-5 h-5 rounded-full bg-red-500 flex-shrink-0"></button>
+                                    <button type="button" onclick="pickPresetColor('#f97316')" class="w-5 h-5 rounded-full bg-orange-500 flex-shrink-0"></button>
+                                    <button type="button" onclick="pickPresetColor('#3b82f6')" class="w-5 h-5 rounded-full bg-blue-500 flex-shrink-0"></button>
+                                    <button type="button" onclick="pickPresetColor('#8b5cf6')" class="w-5 h-5 rounded-full bg-purple-500 flex-shrink-0"></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold rounded-xl text-xs sm:text-sm transition shadow-sm shadow-emerald-200 flex items-center justify-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                            Додати до списку
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Список статей витрат -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <h2 class="font-bold text-slate-900 text-sm">Категорії витрат</h2>
+                        <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg font-semibold" id="categoryBadgeCount">0</span>
+                    </div>
+
+                    <div class="divide-y divide-slate-100 max-h-[290px] overflow-y-auto pr-1" id="categoryListContainer">
+                        <!-- Динамический список -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Модуль експорту та передачі даних -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        Експорт та синхронізація з іншим iPhone
+                    </h3>
+                    <p class="text-[11px] sm:text-xs text-slate-500">Завантажте графічний звіт PNG, таблицю Excel або передайте файл на інший телефон</p>
+                </div>
+
+                <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                    <!-- PNG отчет -->
+                    <button onclick="exportChartPNG()" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-xs font-bold transition border border-emerald-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        Звіт у PNG
+                    </button>
+
+                    <!-- Excel CSV -->
             
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    const href = this.getAttribute('href');
-                    if(href === "#" || href === "") return;
-                    const target = document.querySelector(href);
-                    if(target) {
-                        e.preventDefault();
-                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        if(mobileMenu && !mobileMenu.classList.contains('hidden')) mobileMenu.classList.add('hidden');
-                    }
-                });
-            });
-        });
-    </script>
-</body>
-</html>
